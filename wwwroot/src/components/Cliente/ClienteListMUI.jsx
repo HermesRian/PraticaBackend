@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import ClienteModalForm from './ClienteModalForm';
 import {
   Box,
   Typography,
@@ -52,29 +53,34 @@ const ClienteListMUI = () => {
   const [cidades, setCidades] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [selectedClienteId, setSelectedClienteId] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'nome', direction: 'asc' });
   const [filtro, setFiltro] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [mostrarDocumentoCompleto, setMostrarDocumentoCompleto] = useState(false);
   const [filtroStatus, setFiltroStatus] = useState('todos');
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    Promise.all([
-      fetch('http://localhost:8080/clientes').then(res => res.json()),
-      fetch('http://localhost:8080/cidades').then(res => res.json())
-    ])
-    .then(([clientesData, cidadesData]) => {
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [clientesData, cidadesData] = await Promise.all([
+        fetch('http://localhost:8080/clientes').then(res => res.json()),
+        fetch('http://localhost:8080/cidades').then(res => res.json())
+      ]);
       setClientes(clientesData);
       setCidades(cidadesData);
-      setLoading(false);
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error('Erro ao buscar dados:', error);
       setError('Erro ao carregar dados');
+    } finally {
       setLoading(false);
-    });
+    }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
   const getCidadeNome = (cidadeId) => {
@@ -337,9 +343,8 @@ const ClienteListMUI = () => {
             />
           </Box>
           <Button
-            component={Link}
-            to="/clientes/cadastrar"
             variant="contained"
+            onClick={() => setIsFormModalOpen(true)}
             startIcon={<AddIcon />}
             sx={{ 
               bgcolor: '#1976d2',
@@ -914,6 +919,20 @@ const ClienteListMUI = () => {
           )}
         </DialogActions>
       </Dialog>
+
+      <ClienteModalForm 
+        open={isFormModalOpen}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setSelectedClienteId(null);
+        }}
+        onSaveSuccess={() => {
+          loadData();
+          setIsFormModalOpen(false);
+          setSelectedClienteId(null);
+        }}
+        clienteId={selectedClienteId}
+      />
     </Box>
   );
 };

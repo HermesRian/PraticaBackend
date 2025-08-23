@@ -68,7 +68,7 @@ const converterNumeroParaEstadoCivil = (numero) => {
   }
 };
 
-const ClienteForm = () => {
+const ClienteForm = ({ id: propId, isModal = false, onClose }) => {
   const [cliente, setCliente] = useState({
     nome: '',
     cnpjCpf: '',
@@ -107,7 +107,8 @@ const ClienteForm = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [showRequiredErrors, setShowRequiredErrors] = useState(false);
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id: urlId } = useParams();
+  const id = propId || urlId;
 
   useEffect(() => {
     Promise.all([
@@ -465,7 +466,11 @@ const ClienteForm = () => {
         return response.json();
       })
       .then(() => {
-        navigate('/clientes');
+        if (isModal) {
+          onClose(); // This will be the onSaveSuccess function when provided
+        } else {
+          navigate('/clientes');
+        }
       })      .catch((error) => {
         console.error('Erro capturado:', error);
         if (error.message.trim()) {
@@ -475,7 +480,11 @@ const ClienteForm = () => {
   };
 
   const handleCancel = () => {
-    navigate('/clientes');
+    if (isModal) {
+      onClose();
+    } else {
+      navigate('/clientes');
+    }
   };
 
   const handleOpenCidadeModal = () => {
@@ -523,22 +532,23 @@ const ClienteForm = () => {
     });
     setIsCondicaoPagamentoModalOpen(false);
   };  return (    <Box sx={{ 
-      padding: { xs: 2, md: 3 }, 
+      padding: isModal ? 0 : { xs: 2, md: 3 }, 
       bgcolor: '#f8f9fa', 
-      minHeight: '100vh',
-      paddingBottom: 0.5
+      minHeight: isModal ? 'auto' : '100vh',
+      paddingBottom: isModal ? 0 : 0.5
     }}>
       <Paper 
         component="form"
         onSubmit={handleSubmit}
-        elevation={10}        sx={{
-          width: '95%',
-          maxWidth: 1390,
-          minHeight: '70vh',
-          mx: 'auto',
+        elevation={isModal ? 0 : 10}
+        sx={{
+          width: isModal ? '100%' : '95%',
+          maxWidth: isModal ? 'none' : 1390,
+          minHeight: isModal ? 'auto' : '70vh',
+          mx: isModal ? 0 : 'auto',
           p: { xs: 2, md: 3, lg: 4 },
           pb: 0,
-          borderRadius: 2,
+          borderRadius: isModal ? 0 : 2,
           overflow: 'hidden',
           position: 'relative',
           '& .MuiFormLabel-root': {
