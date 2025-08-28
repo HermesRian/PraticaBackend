@@ -14,17 +14,24 @@ import java.sql.*;
 public class ProdutoDAO {
 
     public void salvar(Produto produto) {
-        String sql = "INSERT INTO produto (nome, preco, quantidade_estoque, descricao, codigo, ativo) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO produto (nome, preco, quantidade_estoque, descricao, codigo, ativo, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, produto.getNome());
             statement.setBigDecimal(2, produto.getPreco());
-            statement.setInt(3, produto.getQuantidadeEstoque());
+            statement.setObject(3, produto.getQuantidadeEstoque());
             statement.setString(4, produto.getDescricao());
             statement.setString(5, produto.getCodigo());
             statement.setBoolean(6, produto.getAtivo() != null ? produto.getAtivo() : true);
+            statement.setObject(7, produto.getMarcaId());
+            statement.setObject(8, produto.getUnidadeMedidaId());
+            statement.setBigDecimal(9, produto.getValorCompra());
+            statement.setBigDecimal(10, produto.getValorVenda());
+            statement.setObject(11, produto.getQuantidadeMinima());
+            statement.setBigDecimal(12, produto.getPercentualLucro());
+            statement.setString(13, produto.getObservacoes());
 
             statement.executeUpdate();
 
@@ -46,10 +53,19 @@ public class ProdutoDAO {
                 produto.setId(resultSet.getLong("id"));
                 produto.setNome(resultSet.getString("nome"));
                 produto.setPreco(resultSet.getBigDecimal("preco"));
-                produto.setQuantidadeEstoque(resultSet.getInt("quantidade_estoque"));
+                produto.setQuantidadeEstoque((Integer) resultSet.getObject("quantidade_estoque"));
                 produto.setDescricao(resultSet.getString("descricao"));
                 produto.setCodigo(resultSet.getString("codigo"));
                 produto.setAtivo(resultSet.getBoolean("ativo"));
+                produto.setMarcaId((Long) resultSet.getObject("marca_id"));
+                produto.setUnidadeMedidaId((Long) resultSet.getObject("unidade_medida_id"));
+                produto.setValorCompra(resultSet.getBigDecimal("valor_compra"));
+                produto.setValorVenda(resultSet.getBigDecimal("valor_venda"));
+                produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
+                produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
+                produto.setObservacoes(resultSet.getString("observacoes"));
+                produto.setDataCriacao(resultSet.getTimestamp("data_criacao"));
+                produto.setUltimaModificacao(resultSet.getTimestamp("ultima_modificacao"));
 
                 produtos.add(produto);
             }
@@ -76,10 +92,19 @@ public class ProdutoDAO {
                 produto.setId(resultSet.getLong("id"));
                 produto.setNome(resultSet.getString("nome"));
                 produto.setPreco(resultSet.getBigDecimal("preco"));
-                produto.setQuantidadeEstoque(resultSet.getInt("quantidade_estoque"));
+                produto.setQuantidadeEstoque((Integer) resultSet.getObject("quantidade_estoque"));
                 produto.setDescricao(resultSet.getString("descricao"));
                 produto.setCodigo(resultSet.getString("codigo"));
                 produto.setAtivo(resultSet.getBoolean("ativo"));
+                produto.setMarcaId((Long) resultSet.getObject("marca_id"));
+                produto.setUnidadeMedidaId((Long) resultSet.getObject("unidade_medida_id"));
+                produto.setValorCompra(resultSet.getBigDecimal("valor_compra"));
+                produto.setValorVenda(resultSet.getBigDecimal("valor_venda"));
+                produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
+                produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
+                produto.setObservacoes(resultSet.getString("observacoes"));
+                produto.setDataCriacao(resultSet.getTimestamp("data_criacao"));
+                produto.setUltimaModificacao(resultSet.getTimestamp("ultima_modificacao"));
             }
 
         } catch (SQLException e) {
@@ -90,18 +115,25 @@ public class ProdutoDAO {
     }
 
     public void atualizar(Produto produto) {
-        String sql = "UPDATE produto SET nome = ?, preco = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, ativo = ? WHERE id = ?";
+        String sql = "UPDATE produto SET nome = ?, preco = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, ativo = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacoes = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, produto.getNome());
             statement.setBigDecimal(2, produto.getPreco());
-            statement.setInt(3, produto.getQuantidadeEstoque());
+            statement.setObject(3, produto.getQuantidadeEstoque());
             statement.setString(4, produto.getDescricao());
             statement.setString(5, produto.getCodigo());
             statement.setBoolean(6, produto.getAtivo() != null ? produto.getAtivo() : true);
-            statement.setLong(7, produto.getId());
+            statement.setObject(7, produto.getMarcaId());
+            statement.setObject(8, produto.getUnidadeMedidaId());
+            statement.setBigDecimal(9, produto.getValorCompra());
+            statement.setBigDecimal(10, produto.getValorVenda());
+            statement.setObject(11, produto.getQuantidadeMinima());
+            statement.setBigDecimal(12, produto.getPercentualLucro());
+            statement.setString(13, produto.getObservacoes());
+            statement.setLong(14, produto.getId());
 
             statement.executeUpdate();
 

@@ -1,69 +1,25 @@
 package com.cantina.entities;
 
+import lombok.Data;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
+@Data
 public class Produto {
     private Long id;
     private String nome;
     private BigDecimal preco;
-    private int quantidadeEstoque;
+    private Integer quantidadeEstoque;
     private String descricao;
     private String codigo;
     private Boolean ativo;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public BigDecimal getPreco() {
-        return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
-    }
-
-    public int getQuantidadeEstoque() {
-        return quantidadeEstoque;
-    }
-
-    public void setQuantidadeEstoque(int quantidadeEstoque) {
-        this.quantidadeEstoque = quantidadeEstoque;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
-    }
+    private Long marcaId;
+    private Long unidadeMedidaId;
+    private BigDecimal valorCompra;
+    private BigDecimal valorVenda;
+    private Integer quantidadeMinima;
+    private BigDecimal percentualLucro;
+    private String observacoes;
+    private Timestamp dataCriacao;
+    private Timestamp ultimaModificacao;
 }
