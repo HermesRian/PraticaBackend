@@ -14,24 +14,25 @@ import java.sql.*;
 public class ProdutoDAO {
 
     public void salvar(Produto produto) {
-        String sql = "INSERT INTO produto (nome, preco, quantidade_estoque, descricao, codigo, ativo, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO produto (nome, quantidade_estoque, descricao, codigo, status, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacoes, created_at, updated_at, referencia, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, produto.getNome());
-            statement.setBigDecimal(2, produto.getPreco());
-            statement.setObject(3, produto.getQuantidadeEstoque());
-            statement.setString(4, produto.getDescricao());
-            statement.setString(5, produto.getCodigo());
-            statement.setBoolean(6, produto.getAtivo() != null ? produto.getAtivo() : true);
-            statement.setObject(7, produto.getMarcaId());
-            statement.setObject(8, produto.getUnidadeMedidaId());
-            statement.setBigDecimal(9, produto.getValorCompra());
-            statement.setBigDecimal(10, produto.getValorVenda());
-            statement.setObject(11, produto.getQuantidadeMinima());
-            statement.setBigDecimal(12, produto.getPercentualLucro());
-            statement.setString(13, produto.getObservacoes());
+            statement.setObject(2, produto.getQuantidadeEstoque());
+            statement.setString(3, produto.getDescricao());
+            statement.setString(4, produto.getCodigo());
+            statement.setBoolean(5, produto.getAtivo() != null ? produto.getAtivo() : true);
+            statement.setObject(6, produto.getMarcaId());
+            statement.setObject(7, produto.getUnidadeMedidaId());
+            statement.setBigDecimal(8, produto.getValorCompra());
+            statement.setBigDecimal(9, produto.getValorVenda());
+            statement.setObject(10, produto.getQuantidadeMinima());
+            statement.setBigDecimal(11, produto.getPercentualLucro());
+            statement.setString(12, produto.getObservacoes());
+            statement.setString(13, produto.getReferencia());
+            statement.setObject(14, produto.getCategoriaId());
 
             statement.executeUpdate();
 
@@ -52,11 +53,12 @@ public class ProdutoDAO {
                 Produto produto = new Produto();
                 produto.setId(resultSet.getLong("id"));
                 produto.setNome(resultSet.getString("nome"));
-                produto.setPreco(resultSet.getBigDecimal("preco"));
+                produto.setReferencia(resultSet.getString("referencia"));
+                produto.setCategoriaId((Integer) resultSet.getObject("categoria_id"));
                 produto.setQuantidadeEstoque((Integer) resultSet.getObject("quantidade_estoque"));
                 produto.setDescricao(resultSet.getString("descricao"));
                 produto.setCodigo(resultSet.getString("codigo"));
-                produto.setAtivo(resultSet.getBoolean("ativo"));
+                produto.setAtivo(resultSet.getBoolean("status"));
                 produto.setMarcaId((Long) resultSet.getObject("marca_id"));
                 produto.setUnidadeMedidaId((Long) resultSet.getObject("unidade_medida_id"));
                 produto.setValorCompra(resultSet.getBigDecimal("valor_compra"));
@@ -64,8 +66,8 @@ public class ProdutoDAO {
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
                 produto.setObservacoes(resultSet.getString("observacoes"));
-                produto.setDataCriacao(resultSet.getTimestamp("data_criacao"));
-                produto.setUltimaModificacao(resultSet.getTimestamp("ultima_modificacao"));
+                produto.setDataCriacao(resultSet.getTimestamp("created_at"));
+                produto.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
 
                 produtos.add(produto);
             }
@@ -91,11 +93,12 @@ public class ProdutoDAO {
                 produto = new Produto();
                 produto.setId(resultSet.getLong("id"));
                 produto.setNome(resultSet.getString("nome"));
-                produto.setPreco(resultSet.getBigDecimal("preco"));
+                produto.setReferencia(resultSet.getString("referencia"));
+                produto.setCategoriaId((Integer) resultSet.getObject("categoria_id"));
                 produto.setQuantidadeEstoque((Integer) resultSet.getObject("quantidade_estoque"));
                 produto.setDescricao(resultSet.getString("descricao"));
                 produto.setCodigo(resultSet.getString("codigo"));
-                produto.setAtivo(resultSet.getBoolean("ativo"));
+                produto.setAtivo(resultSet.getBoolean("status"));
                 produto.setMarcaId((Long) resultSet.getObject("marca_id"));
                 produto.setUnidadeMedidaId((Long) resultSet.getObject("unidade_medida_id"));
                 produto.setValorCompra(resultSet.getBigDecimal("valor_compra"));
@@ -103,8 +106,8 @@ public class ProdutoDAO {
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
                 produto.setObservacoes(resultSet.getString("observacoes"));
-                produto.setDataCriacao(resultSet.getTimestamp("data_criacao"));
-                produto.setUltimaModificacao(resultSet.getTimestamp("ultima_modificacao"));
+                produto.setDataCriacao(resultSet.getTimestamp("created_at"));
+                produto.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -115,25 +118,26 @@ public class ProdutoDAO {
     }
 
     public void atualizar(Produto produto) {
-        String sql = "UPDATE produto SET nome = ?, preco = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, ativo = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacoes = ? WHERE id = ?";
+        String sql = "UPDATE produto SET nome = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, status = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacoes = ?, updated_at = NOW(), referencia = ?, categoria_id = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, produto.getNome());
-            statement.setBigDecimal(2, produto.getPreco());
-            statement.setObject(3, produto.getQuantidadeEstoque());
-            statement.setString(4, produto.getDescricao());
-            statement.setString(5, produto.getCodigo());
-            statement.setBoolean(6, produto.getAtivo() != null ? produto.getAtivo() : true);
-            statement.setObject(7, produto.getMarcaId());
-            statement.setObject(8, produto.getUnidadeMedidaId());
-            statement.setBigDecimal(9, produto.getValorCompra());
-            statement.setBigDecimal(10, produto.getValorVenda());
-            statement.setObject(11, produto.getQuantidadeMinima());
-            statement.setBigDecimal(12, produto.getPercentualLucro());
-            statement.setString(13, produto.getObservacoes());
-            statement.setLong(14, produto.getId());
+            statement.setObject(2, produto.getQuantidadeEstoque());
+            statement.setString(3, produto.getDescricao());
+            statement.setString(4, produto.getCodigo());
+            statement.setBoolean(5, produto.getAtivo() != null ? produto.getAtivo() : true);
+            statement.setObject(6, produto.getMarcaId());
+            statement.setObject(7, produto.getUnidadeMedidaId());
+            statement.setBigDecimal(8, produto.getValorCompra());
+            statement.setBigDecimal(9, produto.getValorVenda());
+            statement.setObject(10, produto.getQuantidadeMinima());
+            statement.setBigDecimal(11, produto.getPercentualLucro());
+            statement.setString(12, produto.getObservacoes());
+            statement.setString(13, produto.getReferencia());
+            statement.setObject(14, produto.getCategoriaId());
+            statement.setLong(15, produto.getId());
 
             statement.executeUpdate();
 

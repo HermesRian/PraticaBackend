@@ -29,7 +29,6 @@ public class Cliente {
     private Integer tipo;
     private String sexo;
     private Long condicaoPagamentoId;
-    private BigDecimal limiteCredito2;
     private String observacao;
     private Date dataCadastro;
     private Date ultimaModificacao;

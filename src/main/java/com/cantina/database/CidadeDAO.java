@@ -11,7 +11,7 @@ import java.util.List;
 public class CidadeDAO {
 
     public Cidade salvar(Cidade cidade) {
-        String sql = "INSERT INTO cidade (nome, codigo_ibge, estado_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO cidade (nome, codigo_ibge, estado_id, status, created_at, updated_at, ddd) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -19,6 +19,8 @@ public class CidadeDAO {
             statement.setString(1, cidade.getNome());
             statement.setString(2, cidade.getCodigoIbge());
             statement.setLong(3, cidade.getEstadoId());
+            statement.setBoolean(4, cidade.getAtivo() != null ? cidade.getAtivo() : true);
+            statement.setObject(5, cidade.getDdd());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -40,6 +42,10 @@ public class CidadeDAO {
                 cidade.setNome(resultSet.getString("nome"));
                 cidade.setCodigoIbge(resultSet.getString("codigo_ibge"));
                 cidade.setEstadoId(resultSet.getLong("estado_id"));
+                cidade.setAtivo(resultSet.getBoolean("status"));
+                cidade.setDataCriacao(resultSet.getDate("created_at"));
+                cidade.setUltimaModificacao(resultSet.getDate("updated_at"));
+                cidade.setDdd((Integer) resultSet.getObject("ddd"));
                 cidades.add(cidade);
             }
 
@@ -66,6 +72,10 @@ public class CidadeDAO {
                 cidade.setNome(resultSet.getString("nome"));
                 cidade.setCodigoIbge(resultSet.getString("codigo_ibge"));
                 cidade.setEstadoId(resultSet.getLong("estado_id"));
+                cidade.setAtivo(resultSet.getBoolean("status"));
+                cidade.setDataCriacao(resultSet.getDate("created_at"));
+                cidade.setUltimaModificacao(resultSet.getDate("updated_at"));
+                cidade.setDdd((Integer) resultSet.getObject("ddd"));
             }
 
         } catch (SQLException e) {
@@ -76,7 +86,7 @@ public class CidadeDAO {
     }
 
     public void atualizar(Cidade cidade) {
-        String sql = "UPDATE cidade SET nome = ?, codigo_ibge = ?, estado_id = ? WHERE id = ?";
+        String sql = "UPDATE cidade SET nome = ?, codigo_ibge = ?, estado_id = ?, status = ?, updated_at = NOW(), ddd = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -84,7 +94,9 @@ public class CidadeDAO {
             statement.setString(1, cidade.getNome());
             statement.setString(2, cidade.getCodigoIbge());
             statement.setLong(3, cidade.getEstadoId());
-            statement.setLong(4, cidade.getId());
+            statement.setBoolean(4, cidade.getAtivo() != null ? cidade.getAtivo() : true);
+            statement.setObject(5, cidade.getDdd());
+            statement.setLong(6, cidade.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -11,15 +11,16 @@ import java.util.List;
 public class PaisDAO {
 
     public Pais salvar(Pais pais) {
-        String sql = "INSERT INTO pais (nome, codigo, sigla) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO pais (nome, sigla, ddi, status, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())";
         String generatedColumns[] = { "id" };
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, generatedColumns)) {
 
             statement.setString(1, pais.getNome());
-            statement.setString(2, pais.getCodigo());
-            statement.setString(3, pais.getSigla());
+            statement.setString(2, pais.getSigla());
+            statement.setString(3, pais.getDdi());
+            statement.setBoolean(4, pais.getAtivo() != null ? pais.getAtivo() : true);
             statement.executeUpdate();
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -46,8 +47,11 @@ public class PaisDAO {
                 Pais pais = new Pais();
                 pais.setId(resultSet.getLong("id"));
                 pais.setNome(resultSet.getString("nome"));
-                pais.setCodigo(resultSet.getString("codigo"));
                 pais.setSigla(resultSet.getString("sigla"));
+                pais.setDdi(resultSet.getString("ddi"));
+                pais.setAtivo(resultSet.getBoolean("status"));
+                pais.setDataCriacao(resultSet.getDate("created_at"));
+                pais.setUltimaModificacao(resultSet.getDate("updated_at"));
                 paises.add(pais);
             }
 
@@ -72,8 +76,11 @@ public class PaisDAO {
                 pais = new Pais();
                 pais.setId(resultSet.getLong("id"));
                 pais.setNome(resultSet.getString("nome"));
-                pais.setCodigo(resultSet.getString("codigo"));
                 pais.setSigla(resultSet.getString("sigla"));
+                pais.setDdi(resultSet.getString("ddi"));
+                pais.setAtivo(resultSet.getBoolean("status"));
+                pais.setDataCriacao(resultSet.getDate("created_at"));
+                pais.setUltimaModificacao(resultSet.getDate("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -84,15 +91,16 @@ public class PaisDAO {
     }
 
     public Pais atualizar(Long id, Pais pais) {
-        String sql = "UPDATE pais SET nome = ?, codigo = ?, sigla = ? WHERE id = ?";
+        String sql = "UPDATE pais SET nome = ?, sigla = ?, ddi = ?, status = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, pais.getNome());
-            statement.setString(2, pais.getCodigo());
-            statement.setString(3, pais.getSigla());
-            statement.setLong(4, id);
+            statement.setString(2, pais.getSigla());
+            statement.setString(3, pais.getDdi());
+            statement.setBoolean(4, pais.getAtivo() != null ? pais.getAtivo() : true);
+            statement.setLong(5, id);
             statement.executeUpdate();
 
             return buscarPorId(id);

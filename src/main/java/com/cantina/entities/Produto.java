@@ -14,12 +14,14 @@ public class Produto {
     private String codigo;
     private Boolean ativo;
     private Long marcaId;
+    private Integer categoriaId;
     private Long unidadeMedidaId;
     private BigDecimal valorCompra;
     private BigDecimal valorVenda;
     private Integer quantidadeMinima;
     private BigDecimal percentualLucro;
     private String observacoes;
+    private String referencia;
     private Timestamp dataCriacao;
     private Timestamp ultimaModificacao;
 }

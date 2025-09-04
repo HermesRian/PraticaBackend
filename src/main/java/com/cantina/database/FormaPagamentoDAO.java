@@ -12,15 +12,13 @@ import java.util.List;
 public class FormaPagamentoDAO {
 
     public void salvar(FormaPagamento formaPagamento) {
-        String sql = "INSERT INTO forma_pagamento (descricao, codigo, tipo, ativo) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO forma_pagamento (nome, status, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1, formaPagamento.getDescricao());
-            statement.setString(2, formaPagamento.getCodigo());
-            statement.setString(3, formaPagamento.getTipo());
-            statement.setBoolean(4, formaPagamento.getAtivo());
+            statement.setString(1, formaPagamento.getNome());
+            statement.setBoolean(2, formaPagamento.getAtivo() != null ? formaPagamento.getAtivo() : true);
 
             statement.executeUpdate();
 
@@ -40,10 +38,10 @@ public class FormaPagamentoDAO {
             while (resultSet.next()) {
                 FormaPagamento forma = new FormaPagamento();
                 forma.setId(resultSet.getLong("id"));
-                forma.setDescricao(resultSet.getString("descricao"));
-                forma.setCodigo(resultSet.getString("codigo"));
-                forma.setTipo(resultSet.getString("tipo"));
-                forma.setAtivo(resultSet.getBoolean("ativo"));
+                forma.setNome(resultSet.getString("nome"));
+                forma.setAtivo(resultSet.getBoolean("status"));
+                forma.setDataCriacao(resultSet.getDate("created_at"));
+                forma.setUltimaModificacao(resultSet.getDate("updated_at"));
 
                 formas.add(forma);
             }
@@ -68,10 +66,10 @@ public class FormaPagamentoDAO {
             if (resultSet.next()) {
                 forma = new FormaPagamento();
                 forma.setId(resultSet.getLong("id"));
-                forma.setDescricao(resultSet.getString("descricao"));
-                forma.setCodigo(resultSet.getString("codigo"));
-                forma.setTipo(resultSet.getString("tipo"));
-                forma.setAtivo(resultSet.getBoolean("ativo"));
+                forma.setNome(resultSet.getString("nome"));
+                forma.setAtivo(resultSet.getBoolean("status"));
+                forma.setDataCriacao(resultSet.getDate("created_at"));
+                forma.setUltimaModificacao(resultSet.getDate("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -82,16 +80,14 @@ public class FormaPagamentoDAO {
     }
 
     public void atualizar(FormaPagamento formaPagamento) {
-        String sql = "UPDATE forma_pagamento SET descricao = ?, codigo = ?, tipo = ?, ativo = ? WHERE id = ?";
+        String sql = "UPDATE forma_pagamento SET nome = ?, status = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1, formaPagamento.getDescricao());
-            statement.setString(2, formaPagamento.getCodigo());
-            statement.setString(3, formaPagamento.getTipo());
-            statement.setBoolean(4, formaPagamento.getAtivo());
-            statement.setLong(5, formaPagamento.getId());
+            statement.setString(1, formaPagamento.getNome());
+            statement.setBoolean(2, formaPagamento.getAtivo() != null ? formaPagamento.getAtivo() : true);
+            statement.setLong(3, formaPagamento.getId());
 
             statement.executeUpdate();
 

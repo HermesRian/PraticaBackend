@@ -23,7 +23,8 @@ public class Fornecedor {
     private Boolean ativo;
     private Long condicaoPagamentoId;
     private BigDecimal limiteCredito;
+    private String observacao;
     private Timestamp dataCriacao;
-    private Timestamp dataAlteracao;
+    private Timestamp ultimaModificacao;
 
 }

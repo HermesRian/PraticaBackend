@@ -33,9 +33,6 @@ public class FormaPagamentoServiceImpl implements FormaPagamentoService {
     public FormaPagamento atualizar(Long id, FormaPagamento formaPagamento) {
         FormaPagamento formaPagamentoExistente = formaPagamentoDAO.buscarPorId(id);
         if (formaPagamentoExistente != null) {
-            formaPagamentoExistente.setDescricao(formaPagamento.getDescricao());
-            formaPagamentoExistente.setCodigo(formaPagamento.getCodigo());
-            formaPagamentoExistente.setTipo(formaPagamento.getTipo());
             formaPagamentoExistente.setAtivo(formaPagamento.getAtivo());
 
             formaPagamentoDAO.atualizar(formaPagamentoExistente);

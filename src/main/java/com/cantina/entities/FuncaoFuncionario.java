@@ -10,7 +10,7 @@ public class FuncaoFuncionario {
     private Long id;
     private String descricao;
     private Boolean ativo;
-    private Timestamp dataCadastro;
+    private Timestamp dataCriacao;
     private Timestamp ultimaModificacao;
     private String nome;
     private Boolean requerCnh;

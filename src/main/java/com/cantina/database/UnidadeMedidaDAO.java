@@ -9,7 +9,7 @@ import java.util.List;
 public class UnidadeMedidaDAO {
 
     public void salvar(UnidadeMedida unidadeMedida) {
-        String sql = "INSERT INTO unidade_medida (nome, ativo) VALUES (?, ?)";
+        String sql = "INSERT INTO unidade_medida (nome, status, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -36,9 +36,9 @@ public class UnidadeMedidaDAO {
                 UnidadeMedida unidadeMedida = new UnidadeMedida();
                 unidadeMedida.setId(resultSet.getLong("id"));
                 unidadeMedida.setNome(resultSet.getString("nome"));
-                unidadeMedida.setAtivo(resultSet.getBoolean("ativo"));
-                unidadeMedida.setDataCriacao(resultSet.getTimestamp("data_criacao"));
-                unidadeMedida.setUltimaModificacao(resultSet.getTimestamp("ultima_modificacao"));
+                unidadeMedida.setAtivo(resultSet.getBoolean("status"));
+                unidadeMedida.setDataCriacao(resultSet.getTimestamp("created_at"));
+                unidadeMedida.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
 
                 unidadesMedida.add(unidadeMedida);
             }
@@ -64,9 +64,9 @@ public class UnidadeMedidaDAO {
                 unidadeMedida = new UnidadeMedida();
                 unidadeMedida.setId(resultSet.getLong("id"));
                 unidadeMedida.setNome(resultSet.getString("nome"));
-                unidadeMedida.setAtivo(resultSet.getBoolean("ativo"));
-                unidadeMedida.setDataCriacao(resultSet.getTimestamp("data_criacao"));
-                unidadeMedida.setUltimaModificacao(resultSet.getTimestamp("ultima_modificacao"));
+                unidadeMedida.setAtivo(resultSet.getBoolean("status"));
+                unidadeMedida.setDataCriacao(resultSet.getTimestamp("created_at"));
+                unidadeMedida.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -77,7 +77,7 @@ public class UnidadeMedidaDAO {
     }
 
     public void atualizar(UnidadeMedida unidadeMedida) {
-        String sql = "UPDATE unidade_medida SET nome = ?, ativo = ? WHERE id = ?";
+        String sql = "UPDATE unidade_medida SET nome = ?, status = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

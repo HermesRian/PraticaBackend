@@ -15,8 +15,8 @@ import java.util.List;
 public class FornecedorDAO {
 
     public void salvar(Fornecedor fornecedor) {
-        String sql = "INSERT INTO fornecedor (razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, rg_inscricao_estadual, ativo, condicao_pagamento_id, limite_credito) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO fornecedor (razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, rg_inscricao_estadual, status, condicao_pagamento_id, limite_credito, created_at, updated_at, observacao) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -33,9 +33,10 @@ public class FornecedorDAO {
             statement.setString(10, fornecedor.getCep());
             statement.setObject(11, fornecedor.getCidadeId());
             statement.setString(12, fornecedor.getRgInscricaoEstadual());
-            statement.setBoolean(13, fornecedor.getAtivo());
+            statement.setBoolean(13, fornecedor.getAtivo() != null ? fornecedor.getAtivo() : true);
             statement.setObject(14, fornecedor.getCondicaoPagamentoId());
             statement.setBigDecimal(15, fornecedor.getLimiteCredito());
+            statement.setString(16, fornecedor.getObservacao());
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -69,11 +70,12 @@ public class FornecedorDAO {
                 fornecedor.setCep(resultSet.getString("cep"));
                 fornecedor.setCidadeId((Long) resultSet.getObject("cidade_id"));
                 fornecedor.setRgInscricaoEstadual(resultSet.getString("rg_inscricao_estadual"));
-                fornecedor.setAtivo(resultSet.getBoolean("ativo"));
+                fornecedor.setAtivo(resultSet.getBoolean("status"));
                 fornecedor.setCondicaoPagamentoId((Long) resultSet.getObject("condicao_pagamento_id"));
                 fornecedor.setLimiteCredito(resultSet.getBigDecimal("limite_credito"));
-                fornecedor.setDataCriacao(resultSet.getTimestamp("data_criacao"));
-                fornecedor.setDataAlteracao(resultSet.getTimestamp("data_alteracao"));
+                fornecedor.setObservacao(resultSet.getString("observacao"));
+                fornecedor.setDataCriacao(resultSet.getTimestamp("created_at"));
+                fornecedor.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
                 fornecedores.add(fornecedor);
             }
 
@@ -109,11 +111,12 @@ public class FornecedorDAO {
                 fornecedor.setCep(resultSet.getString("cep"));
                 fornecedor.setCidadeId((Long) resultSet.getObject("cidade_id"));
                 fornecedor.setRgInscricaoEstadual(resultSet.getString("rg_inscricao_estadual"));
-                fornecedor.setAtivo(resultSet.getBoolean("ativo"));
+                fornecedor.setAtivo(resultSet.getBoolean("status"));
                 fornecedor.setCondicaoPagamentoId((Long) resultSet.getObject("condicao_pagamento_id"));
                 fornecedor.setLimiteCredito(resultSet.getBigDecimal("limite_credito"));
-                fornecedor.setDataCriacao(resultSet.getTimestamp("data_criacao"));
-                fornecedor.setDataAlteracao(resultSet.getTimestamp("data_alteracao"));
+                fornecedor.setObservacao(resultSet.getString("observacao"));
+                fornecedor.setDataCriacao(resultSet.getTimestamp("created_at"));
+                fornecedor.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -137,7 +140,7 @@ public class FornecedorDAO {
         }
     }
     public void update(Fornecedor fornecedor) {
-        String sql = "UPDATE fornecedor SET razao_social = ?, nome_fantasia = ?, cpf_cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, rg_inscricao_estadual = ?, ativo = ?, condicao_pagamento_id = ?, limite_credito = ? WHERE id = ?";
+        String sql = "UPDATE fornecedor SET razao_social = ?, nome_fantasia = ?, cpf_cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, rg_inscricao_estadual = ?, status = ?, condicao_pagamento_id = ?, limite_credito = ?, updated_at = NOW(), observacao = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -154,10 +157,11 @@ public class FornecedorDAO {
             statement.setString(10, fornecedor.getCep());
             statement.setObject(11, fornecedor.getCidadeId());
             statement.setString(12, fornecedor.getRgInscricaoEstadual());
-            statement.setBoolean(13, fornecedor.getAtivo());
+            statement.setBoolean(13, fornecedor.getAtivo() != null ? fornecedor.getAtivo() : true);
             statement.setObject(14, fornecedor.getCondicaoPagamentoId());
             statement.setBigDecimal(15, fornecedor.getLimiteCredito());
-            statement.setLong(16, fornecedor.getId());
+            statement.setString(16, fornecedor.getObservacao());
+            statement.setLong(17, fornecedor.getId());
             statement.executeUpdate();
 
         } catch (SQLException e) {

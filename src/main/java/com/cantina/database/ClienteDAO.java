@@ -25,8 +25,8 @@ public class ClienteDAO {
 
         String sql = "INSERT INTO cliente (nome, cnpjCpf, endereco, numero, complemento, bairro, cep, cidade_id, telefone, email, ativo, " +
                 "apelido, limite_credito, nacionalidade, rg_inscricao_estadual, data_nascimento, estado_civil, tipo, sexo, " +
-                "condicao_pagamento_id, limite_credito2, observacao, data_cadastro, ultima_modificacao) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+                "condicao_pagamento_id, observacao, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -45,7 +45,7 @@ public class ClienteDAO {
             if (cliente.getAtivo() != null) {
                 statement.setBoolean(11, cliente.getAtivo());
             } else {
-                statement.setBoolean(11, false);
+                statement.setBoolean(11, true);
             }
 
             statement.setString(12, cliente.getApelido());
@@ -75,8 +75,7 @@ public class ClienteDAO {
                 statement.setNull(20, Types.BIGINT);
             }
 
-            statement.setBigDecimal(21, cliente.getLimiteCredito2() != null ? cliente.getLimiteCredito2() : BigDecimal.ZERO);
-            statement.setString(22, cliente.getObservacao());
+            statement.setString(21, cliente.getObservacao());
 
             statement.executeUpdate();
         }
@@ -132,7 +131,7 @@ public class ClienteDAO {
         cliente.setCidadeId(resultSet.getLong("cidade_id"));
         cliente.setTelefone(resultSet.getString("telefone"));
         cliente.setEmail(resultSet.getString("email"));
-        cliente.setAtivo(resultSet.getBoolean("ativo"));
+        cliente.setAtivo(resultSet.getBoolean("status"));
         cliente.setApelido(resultSet.getString("apelido"));
         cliente.setLimiteCredito(resultSet.getBigDecimal("limite_credito"));
         cliente.setNacionalidade(resultSet.getString("nacionalidade"));
@@ -144,10 +143,9 @@ public class ClienteDAO {
         cliente.setSexo(resultSet.getString("sexo"));
         cliente.setCondicaoPagamentoId(resultSet.getLong("condicao_pagamento_id"));
         if (resultSet.wasNull()) cliente.setCondicaoPagamentoId(null);
-        cliente.setLimiteCredito2(resultSet.getBigDecimal("limite_credito2"));
         cliente.setObservacao(resultSet.getString("observacao"));
-        cliente.setDataCadastro(resultSet.getTimestamp("data_cadastro"));
-        cliente.setUltimaModificacao(resultSet.getTimestamp("ultima_modificacao"));
+        cliente.setDataCadastro(resultSet.getDate("created_at"));
+        cliente.setUltimaModificacao(resultSet.getDate("updated_at"));
 
         return cliente;
     }
@@ -202,9 +200,9 @@ public class ClienteDAO {
         }
 
         String sql = "UPDATE cliente SET nome = ?, cnpjCpf = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, " +
-                "cidade_id = ?, telefone = ?, email = ?, ativo = ?, apelido = ?, limite_credito = ?, nacionalidade = ?, " +
+                "cidade_id = ?, telefone = ?, email = ?, status = ?, apelido = ?, limite_credito = ?, nacionalidade = ?, " +
                 "rg_inscricao_estadual = ?, data_nascimento = ?, estado_civil = ?, tipo = ?, sexo = ?, " +
-                "condicao_pagamento_id = ?, limite_credito2 = ?, observacao = ?, ultima_modificacao = NOW() " +
+                "condicao_pagamento_id = ?, observacao = ?, updated_at = NOW() " +
                 "WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -224,7 +222,7 @@ public class ClienteDAO {
             if (cliente.getAtivo() != null) {
                 statement.setBoolean(11, cliente.getAtivo());
             } else {
-                statement.setBoolean(11, false);
+                statement.setBoolean(11, true);
             }
             statement.setString(12, cliente.getApelido());
             statement.setBigDecimal(13, cliente.getLimiteCredito() != null ? cliente.getLimiteCredito() : BigDecimal.ZERO);
@@ -248,10 +246,8 @@ public class ClienteDAO {
                 statement.setNull(20, Types.BIGINT);
             }
 
-            statement.setBigDecimal(21, cliente.getLimiteCredito2() != null ? cliente.getLimiteCredito2() : BigDecimal.ZERO);
-
-            statement.setString(22, cliente.getObservacao());
-            statement.setLong(23, cliente.getId());
+            statement.setString(21, cliente.getObservacao());
+            statement.setLong(22, cliente.getId());
 
             statement.executeUpdate();
         }
@@ -270,7 +266,7 @@ public class ClienteDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "UPDATE cliente SET ativo = false, ultima_modificacao = NOW() WHERE id = ?";
+        String sql = "UPDATE cliente SET status = false, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

@@ -4,8 +4,8 @@ import lombok.Data;
 import java.sql.Date;
 
 @Data
-public class FormaPagamento {
-    private Long id;
+public class Categoria {
+    private Integer id;
     private String nome;
     private Boolean ativo;
     private Date dataCriacao;
