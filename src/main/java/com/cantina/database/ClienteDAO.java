@@ -23,10 +23,10 @@ public class ClienteDAO {
             }
         }
 
-        String sql = "INSERT INTO cliente (nome, cnpjCpf, endereco, numero, complemento, bairro, cep, cidade_id, telefone, email, ativo, " +
+        String sql = "INSERT INTO cliente (nome, cnpjCpf, endereco, numero, complemento, bairro, cep, cidade_id, telefone, email, status, " +
                 "apelido, limite_credito, nacionalidade, rg_inscricao_estadual, data_nascimento, estado_civil, tipo, sexo, " +
                 "condicao_pagamento_id, observacao, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -38,7 +38,7 @@ public class ClienteDAO {
             statement.setString(5, cliente.getComplemento());
             statement.setString(6, cliente.getBairro());
             statement.setString(7, cliente.getCep());
-            statement.setLong(8, cliente.getCidadeId());
+            statement.setObject(8, cliente.getCidadeId());
             statement.setString(9, cliente.getTelefone());
             statement.setString(10, cliente.getEmail());
 
@@ -205,6 +205,7 @@ public class ClienteDAO {
                 "condicao_pagamento_id = ?, observacao = ?, updated_at = NOW() " +
                 "WHERE id = ?";
 
+
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -215,7 +216,7 @@ public class ClienteDAO {
             statement.setString(5, cliente.getComplemento());
             statement.setString(6, cliente.getBairro());
             statement.setString(7, cliente.getCep());
-            statement.setLong(8, cliente.getCidadeId());
+            statement.setObject(8, cliente.getCidadeId());
             statement.setString(9, cliente.getTelefone());
             statement.setString(10, cliente.getEmail());
 
