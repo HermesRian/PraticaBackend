@@ -1,6 +1,7 @@
 package com.cantina.entities;
 
 import lombok.Data;
+import java.sql.Timestamp;
 
 @Data
 public class Transportadora {
@@ -12,6 +13,16 @@ public class Transportadora {
     private String email;
     private String telefone;
     private String endereco;
+    private String numero;
+    private String complemento;
+    private String bairro;
     private Long cidadeId;
-    private boolean ativo;
+    private String cep;
+    private String tipo;
+    private String rgInscricaoEstadual;
+    private Long condicaoPagamentoId;
+    private String observacao;
+    private Boolean ativo;
+    private Timestamp dataCriacao;
+    private Timestamp ultimaModificacao;
 }

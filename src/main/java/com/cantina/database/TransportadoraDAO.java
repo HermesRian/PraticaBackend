@@ -9,7 +9,7 @@ import java.util.List;
 public class TransportadoraDAO {
 
     public void salvar(Transportadora transportadora) {
-        String sql = "INSERT INTO transportadora (razao_social, nome_fantasia, cnpj, email, telefone, endereco, cidade_id, ativo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO transportadora (razao_social, nome_fantasia, cnpj, email, telefone, endereco, numero, complemento, bairro, cidade_id, cep, tipo,  rg_inscricao_estadual, condicao_pagamento_id, observacao, ativo, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -20,8 +20,16 @@ public class TransportadoraDAO {
             statement.setString(4, transportadora.getEmail());
             statement.setString(5, transportadora.getTelefone());
             statement.setString(6, transportadora.getEndereco());
-            statement.setObject(7, transportadora.getCidadeId());
-            statement.setBoolean(8, transportadora.isAtivo());
+            statement.setString(7, transportadora.getNumero());
+            statement.setString(8, transportadora.getComplemento());
+            statement.setString(9, transportadora.getBairro());
+            statement.setObject(10, transportadora.getCidadeId());
+            statement.setString(11, transportadora.getCep());
+            statement.setString(12, transportadora.getTipo() != null ? transportadora.getTipo() : "J");
+            statement.setString(13, transportadora.getRgInscricaoEstadual());
+            statement.setObject(14, transportadora.getCondicaoPagamentoId());
+            statement.setString(15, transportadora.getObservacao());
+            statement.setBoolean(16, transportadora.getAtivo() != null ? transportadora.getAtivo() : true);
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,8 +53,18 @@ public class TransportadoraDAO {
                 transportadora.setEmail(resultSet.getString("email"));
                 transportadora.setTelefone(resultSet.getString("telefone"));
                 transportadora.setEndereco(resultSet.getString("endereco"));
+                transportadora.setNumero(resultSet.getString("numero"));
+                transportadora.setComplemento(resultSet.getString("complemento"));
+                transportadora.setBairro(resultSet.getString("bairro"));
                 transportadora.setCidadeId(resultSet.getObject("cidade_id", Long.class));
+                transportadora.setCep(resultSet.getString("cep"));
+                transportadora.setTipo(resultSet.getString("tipo"));
+                transportadora.setRgInscricaoEstadual(resultSet.getString("rg_inscricao_estadual"));
+                transportadora.setCondicaoPagamentoId(resultSet.getObject("condicao_pagamento_id", Long.class));
+                transportadora.setObservacao(resultSet.getString("observacao"));
                 transportadora.setAtivo(resultSet.getBoolean("ativo"));
+                transportadora.setDataCriacao(resultSet.getTimestamp("created_at"));
+                transportadora.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
                 transportadoras.add(transportadora);
             }
 
@@ -76,8 +94,18 @@ public class TransportadoraDAO {
                 transportadora.setEmail(resultSet.getString("email"));
                 transportadora.setTelefone(resultSet.getString("telefone"));
                 transportadora.setEndereco(resultSet.getString("endereco"));
+                transportadora.setNumero(resultSet.getString("numero"));
+                transportadora.setComplemento(resultSet.getString("complemento"));
+                transportadora.setBairro(resultSet.getString("bairro"));
                 transportadora.setCidadeId(resultSet.getObject("cidade_id", Long.class));
+                transportadora.setCep(resultSet.getString("cep"));
+                transportadora.setTipo(resultSet.getString("tipo"));
+                transportadora.setRgInscricaoEstadual(resultSet.getString("rg_inscricao_estadual"));
+                transportadora.setCondicaoPagamentoId(resultSet.getObject("condicao_pagamento_id", Long.class));
+                transportadora.setObservacao(resultSet.getString("observacao"));
                 transportadora.setAtivo(resultSet.getBoolean("ativo"));
+                transportadora.setDataCriacao(resultSet.getTimestamp("created_at"));
+                transportadora.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -88,7 +116,7 @@ public class TransportadoraDAO {
     }
 
     public void atualizar(Transportadora transportadora) {
-        String sql = "UPDATE transportadora SET razao_social = ?, nome_fantasia = ?, cnpj = ?, email = ?, telefone = ?, endereco = ?, cidade_id = ?, ativo = ? WHERE id = ?";
+        String sql = "UPDATE transportadora SET razao_social = ?, nome_fantasia = ?, cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cidade_id = ?, cep = ?, tipo = ?, rg_inscricao_estadual = ?, condicao_pagamento_id = ?, observacao = ?, ativo = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -99,9 +127,17 @@ public class TransportadoraDAO {
             statement.setString(4, transportadora.getEmail());
             statement.setString(5, transportadora.getTelefone());
             statement.setString(6, transportadora.getEndereco());
-            statement.setObject(7, transportadora.getCidadeId());
-            statement.setBoolean(8, transportadora.isAtivo());
-            statement.setLong(9, transportadora.getId());
+            statement.setString(7, transportadora.getNumero());
+            statement.setString(8, transportadora.getComplemento());
+            statement.setString(9, transportadora.getBairro());
+            statement.setObject(10, transportadora.getCidadeId());
+            statement.setString(11, transportadora.getCep());
+            statement.setString(12, transportadora.getTipo() != null ? transportadora.getTipo() : "J");
+            statement.setString(13, transportadora.getRgInscricaoEstadual());
+            statement.setObject(14, transportadora.getCondicaoPagamentoId());
+            statement.setString(15, transportadora.getObservacao());
+            statement.setBoolean(16, transportadora.getAtivo() != null ? transportadora.getAtivo() : true);
+            statement.setLong(17, transportadora.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

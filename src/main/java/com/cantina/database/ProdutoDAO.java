@@ -14,7 +14,7 @@ import java.sql.*;
 public class ProdutoDAO {
 
     public void salvar(Produto produto) {
-        String sql = "INSERT INTO produto (nome, quantidade_estoque, descricao, codigo, status, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacoes, created_at, updated_at, referencia, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)";
+        String sql = "INSERT INTO produto (nome, quantidade_estoque, descricao, codigo, status, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacao, created_at, updated_at, referencia, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -30,7 +30,7 @@ public class ProdutoDAO {
             statement.setBigDecimal(9, produto.getValorVenda());
             statement.setObject(10, produto.getQuantidadeMinima());
             statement.setBigDecimal(11, produto.getPercentualLucro());
-            statement.setString(12, produto.getObservacoes());
+            statement.setString(12, produto.getObservacao());
             statement.setString(13, produto.getReferencia());
             statement.setObject(14, produto.getCategoriaId());
 
@@ -65,7 +65,7 @@ public class ProdutoDAO {
                 produto.setValorVenda(resultSet.getBigDecimal("valor_venda"));
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
-                produto.setObservacoes(resultSet.getString("observacoes"));
+                produto.setObservacao(resultSet.getString("observacao"));
                 produto.setDataCriacao(resultSet.getTimestamp("created_at"));
                 produto.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
 
@@ -105,7 +105,7 @@ public class ProdutoDAO {
                 produto.setValorVenda(resultSet.getBigDecimal("valor_venda"));
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
-                produto.setObservacoes(resultSet.getString("observacoes"));
+                produto.setObservacao(resultSet.getString("observacao"));
                 produto.setDataCriacao(resultSet.getTimestamp("created_at"));
                 produto.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
             }
@@ -118,7 +118,7 @@ public class ProdutoDAO {
     }
 
     public void atualizar(Produto produto) {
-        String sql = "UPDATE produto SET nome = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, status = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacoes = ?, updated_at = NOW(), referencia = ?, categoria_id = ? WHERE id = ?";
+        String sql = "UPDATE produto SET nome = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, status = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacao = ?, updated_at = NOW(), referencia = ?, categoria_id = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -134,7 +134,7 @@ public class ProdutoDAO {
             statement.setBigDecimal(9, produto.getValorVenda());
             statement.setObject(10, produto.getQuantidadeMinima());
             statement.setBigDecimal(11, produto.getPercentualLucro());
-            statement.setString(12, produto.getObservacoes());
+            statement.setString(12, produto.getObservacao());
             statement.setString(13, produto.getReferencia());
             statement.setObject(14, produto.getCategoriaId());
             statement.setLong(15, produto.getId());

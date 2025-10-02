@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 public class Produto {
     private Long id;
     private String nome;
-    private BigDecimal preco;
     private Integer quantidadeEstoque;
     private String descricao;
     private String codigo;
@@ -20,7 +19,7 @@ public class Produto {
     private BigDecimal valorVenda;
     private Integer quantidadeMinima;
     private BigDecimal percentualLucro;
-    private String observacoes;
+    private String observacao;
     private String referencia;
     private Timestamp dataCriacao;
     private Timestamp ultimaModificacao;
