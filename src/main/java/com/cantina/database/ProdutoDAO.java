@@ -26,10 +26,10 @@ public class ProdutoDAO {
             statement.setBoolean(5, produto.getAtivo() != null ? produto.getAtivo() : true);
             statement.setObject(6, produto.getMarcaId());
             statement.setObject(7, produto.getUnidadeMedidaId());
-            statement.setBigDecimal(8, produto.getValorCompra());
-            statement.setBigDecimal(9, produto.getValorVenda());
+            statement.setObject(8, produto.getValorCompra());
+            statement.setObject(9, produto.getValorVenda());
             statement.setObject(10, produto.getQuantidadeMinima());
-            statement.setBigDecimal(11, produto.getPercentualLucro());
+            statement.setObject(11, produto.getPercentualLucro());
             statement.setString(12, produto.getObservacao());
             statement.setString(13, produto.getReferencia());
             statement.setObject(14, produto.getCategoriaId());
@@ -66,8 +66,8 @@ public class ProdutoDAO {
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
                 produto.setObservacao(resultSet.getString("observacao"));
-                produto.setDataCriacao(resultSet.getTimestamp("created_at"));
-                produto.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+                produto.setDataCriacao(resultSet.getDate("created_at"));
+                produto.setUltimaModificacao(resultSet.getDate("updated_at"));
 
                 produtos.add(produto);
             }
@@ -106,8 +106,8 @@ public class ProdutoDAO {
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
                 produto.setObservacao(resultSet.getString("observacao"));
-                produto.setDataCriacao(resultSet.getTimestamp("created_at"));
-                produto.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+                produto.setDataCriacao(resultSet.getDate("created_at"));
+                produto.setUltimaModificacao(resultSet.getDate("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -130,10 +130,10 @@ public class ProdutoDAO {
             statement.setBoolean(5, produto.getAtivo() != null ? produto.getAtivo() : true);
             statement.setObject(6, produto.getMarcaId());
             statement.setObject(7, produto.getUnidadeMedidaId());
-            statement.setBigDecimal(8, produto.getValorCompra());
-            statement.setBigDecimal(9, produto.getValorVenda());
+            statement.setObject(8, produto.getValorCompra());
+            statement.setObject(9, produto.getValorVenda());
             statement.setObject(10, produto.getQuantidadeMinima());
-            statement.setBigDecimal(11, produto.getPercentualLucro());
+            statement.setObject(11, produto.getPercentualLucro());
             statement.setString(12, produto.getObservacao());
             statement.setString(13, produto.getReferencia());
             statement.setObject(14, produto.getCategoriaId());

@@ -3,6 +3,7 @@ package com.cantina.entities;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 public class Produto {
@@ -21,6 +22,6 @@ public class Produto {
     private BigDecimal percentualLucro;
     private String observacao;
     private String referencia;
-    private Timestamp dataCriacao;
-    private Timestamp ultimaModificacao;
+    private Date dataCriacao;
+    private Date ultimaModificacao;
 }
