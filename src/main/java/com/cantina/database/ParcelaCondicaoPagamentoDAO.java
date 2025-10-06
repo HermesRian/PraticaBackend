@@ -11,7 +11,7 @@ import java.util.List;
 public class ParcelaCondicaoPagamentoDAO {
 
     public void salvar(ParcelaCondicaoPagamento parcela) {
-        String sql = "INSERT INTO parcela_condicao_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO parcela_condicao_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id, data_vencimento, situacao, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -19,8 +19,16 @@ public class ParcelaCondicaoPagamentoDAO {
             statement.setInt(1, parcela.getNumeroParcela());
             statement.setInt(2, parcela.getDias());
             statement.setDouble(3, parcela.getPercentual());
-            statement.setLong(4, parcela.getCondicaoPagamento().getId());
-            statement.setLong(5, parcela.getFormaPagamento().getId());
+            statement.setLong(4, parcela.getCondicaoPagamentoId() != null ? parcela.getCondicaoPagamentoId() : parcela.getCondicaoPagamento().getId());
+            statement.setLong(5, parcela.getFormaPagamentoId() != null ? parcela.getFormaPagamentoId() : parcela.getFormaPagamento().getId());
+
+            if (parcela.getDataVencimento() != null) {
+                statement.setDate(6, new java.sql.Date(parcela.getDataVencimento().getTime()));
+            } else {
+                statement.setNull(6, Types.DATE);
+            }
+
+            statement.setString(7, parcela.getSituacao() != null ? parcela.getSituacao() : "A");
 
             statement.executeUpdate();
 
@@ -33,6 +41,7 @@ public class ParcelaCondicaoPagamentoDAO {
             e.printStackTrace();
         }
     }
+
 
     public List<ParcelaCondicaoPagamento> listarTodos() {
         List<ParcelaCondicaoPagamento> parcelas = new ArrayList<>();
@@ -76,7 +85,7 @@ public class ParcelaCondicaoPagamentoDAO {
     }
 
     public void atualizar(ParcelaCondicaoPagamento parcela) {
-        String sql = "UPDATE parcela_condicao_pagamento SET numero_parcela = ?, dias = ?, percentual = ?, condicao_pagamento_id = ?, forma_pagamento_id = ? WHERE id = ?";
+        String sql = "UPDATE parcela_condicao_pagamento SET numero_parcela = ?, dias = ?, percentual = ?, condicao_pagamento_id = ?, forma_pagamento_id = ?, data_vencimento = ?, situacao = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -84,9 +93,17 @@ public class ParcelaCondicaoPagamentoDAO {
             statement.setInt(1, parcela.getNumeroParcela());
             statement.setInt(2, parcela.getDias());
             statement.setDouble(3, parcela.getPercentual());
-            statement.setLong(4, parcela.getCondicaoPagamento().getId());
-            statement.setLong(5, parcela.getFormaPagamento().getId());
-            statement.setLong(6, parcela.getId());
+            statement.setLong(4, parcela.getCondicaoPagamentoId() != null ? parcela.getCondicaoPagamentoId() : parcela.getCondicaoPagamento().getId());
+            statement.setLong(5, parcela.getFormaPagamentoId() != null ? parcela.getFormaPagamentoId() : parcela.getFormaPagamento().getId());
+
+            if (parcela.getDataVencimento() != null) {
+                statement.setDate(6, new java.sql.Date(parcela.getDataVencimento().getTime()));
+            } else {
+                statement.setNull(6, Types.DATE);
+            }
+
+            statement.setString(7, parcela.getSituacao() != null ? parcela.getSituacao() : "A");
+            statement.setLong(8, parcela.getId());
 
             statement.executeUpdate();
 
@@ -94,6 +111,7 @@ public class ParcelaCondicaoPagamentoDAO {
             e.printStackTrace();
         }
     }
+
 
     public void excluir(Long id) {
         String sql = "DELETE FROM parcela_condicao_pagamento WHERE id = ?";
@@ -115,6 +133,12 @@ public class ParcelaCondicaoPagamentoDAO {
         parcela.setNumeroParcela(resultSet.getInt("numero_parcela"));
         parcela.setDias(resultSet.getInt("dias"));
         parcela.setPercentual(resultSet.getDouble("percentual"));
+        parcela.setCondicaoPagamentoId(resultSet.getLong("condicao_pagamento_id"));
+        parcela.setFormaPagamentoId(resultSet.getLong("forma_pagamento_id"));
+        parcela.setDataVencimento(resultSet.getDate("data_vencimento"));
+        parcela.setSituacao(resultSet.getString("situacao"));
+        parcela.setDataCriacao(resultSet.getDate("created_at"));
+        parcela.setUltimaModificacao(resultSet.getDate("updated_at"));
 
         CondicaoPagamento condicaoPagamento = new CondicaoPagamento();
         condicaoPagamento.setId(resultSet.getLong("condicao_pagamento_id"));
@@ -125,6 +149,7 @@ public class ParcelaCondicaoPagamentoDAO {
 
         return parcela;
     }
+
 
     public List<ParcelaCondicaoPagamento> buscarPorCondicaoPagamentoId(Long condicaoPagamentoId) {
         List<ParcelaCondicaoPagamento> parcelas = new ArrayList<>();
