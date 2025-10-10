@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 @Data
 public class Fornecedor {
     private Long id;
+    private Integer tipo;
     private String razaoSocial;
     private String nomeFantasia;
     private String cpfCnpj;

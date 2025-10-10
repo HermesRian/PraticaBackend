@@ -15,28 +15,29 @@ import java.util.List;
 public class FornecedorDAO {
 
     public void salvar(Fornecedor fornecedor) {
-        String sql = "INSERT INTO fornecedor (razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, rg_inscricao_estadual, status, condicao_pagamento_id, limite_credito, created_at, updated_at, observacao) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)";
+        String sql = "INSERT INTO fornecedor (tipo, razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, rg_inscricao_estadual, status, condicao_pagamento_id, limite_credito, created_at, updated_at, observacao) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1, fornecedor.getRazaoSocial());
-            statement.setString(2, fornecedor.getNomeFantasia());
-            statement.setString(3, fornecedor.getCpfCnpj());
-            statement.setString(4, fornecedor.getEmail());
-            statement.setString(5, fornecedor.getTelefone());
-            statement.setString(6, fornecedor.getEndereco());
-            statement.setString(7, fornecedor.getNumero());
-            statement.setString(8, fornecedor.getComplemento());
-            statement.setString(9, fornecedor.getBairro());
-            statement.setString(10, fornecedor.getCep());
-            statement.setObject(11, fornecedor.getCidadeId());
-            statement.setString(12, fornecedor.getRgInscricaoEstadual());
-            statement.setBoolean(13, fornecedor.getAtivo() != null ? fornecedor.getAtivo() : true);
-            statement.setObject(14, fornecedor.getCondicaoPagamentoId());
-            statement.setBigDecimal(15, fornecedor.getLimiteCredito());
-            statement.setString(16, fornecedor.getObservacao());
+            statement.setObject(1, fornecedor.getTipo());
+            statement.setString(2, fornecedor.getRazaoSocial());
+            statement.setString(3, fornecedor.getNomeFantasia());
+            statement.setString(4, fornecedor.getCpfCnpj());
+            statement.setString(5, fornecedor.getEmail());
+            statement.setString(6, fornecedor.getTelefone());
+            statement.setString(7, fornecedor.getEndereco());
+            statement.setString(8, fornecedor.getNumero());
+            statement.setString(9, fornecedor.getComplemento());
+            statement.setString(10, fornecedor.getBairro());
+            statement.setString(11, fornecedor.getCep());
+            statement.setObject(12, fornecedor.getCidadeId());
+            statement.setString(13, fornecedor.getRgInscricaoEstadual());
+            statement.setBoolean(14, fornecedor.getAtivo() != null ? fornecedor.getAtivo() : true);
+            statement.setObject(15, fornecedor.getCondicaoPagamentoId());
+            statement.setBigDecimal(16, fornecedor.getLimiteCredito());
+            statement.setString(17, fornecedor.getObservacao());
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -58,6 +59,7 @@ public class FornecedorDAO {
             while (resultSet.next()) {
                 Fornecedor fornecedor = new Fornecedor();
                 fornecedor.setId(resultSet.getLong("id"));
+                fornecedor.setTipo((Integer) resultSet.getObject("tipo"));
                 fornecedor.setRazaoSocial(resultSet.getString("razao_social"));
                 fornecedor.setNomeFantasia(resultSet.getString("nome_fantasia"));
                 fornecedor.setCpfCnpj(resultSet.getString("cpf_cnpj"));
@@ -99,6 +101,7 @@ public class FornecedorDAO {
             if (resultSet.next()) {
                 fornecedor = new Fornecedor();
                 fornecedor.setId(resultSet.getLong("id"));
+                fornecedor.setTipo((Integer) resultSet.getObject("tipo"));
                 fornecedor.setRazaoSocial(resultSet.getString("razao_social"));
                 fornecedor.setNomeFantasia(resultSet.getString("nome_fantasia"));
                 fornecedor.setCpfCnpj(resultSet.getString("cpf_cnpj"));
@@ -140,28 +143,28 @@ public class FornecedorDAO {
         }
     }
     public void update(Fornecedor fornecedor) {
-        String sql = "UPDATE fornecedor SET razao_social = ?, nome_fantasia = ?, cpf_cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, rg_inscricao_estadual = ?, status = ?, condicao_pagamento_id = ?, limite_credito = ?, updated_at = NOW(), observacao = ? WHERE id = ?";
-
+        String sql = "UPDATE fornecedor SET tipo = ?, razao_social = ?, nome_fantasia = ?, cpf_cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro =?, cep = ?, cidade_id = ?, rg_inscricao_estadual = ?, status = ?, condicao_pagamento_id = ?, limite_credito = ?, updated_at = NOW(), observacao = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1, fornecedor.getRazaoSocial());
-            statement.setString(2, fornecedor.getNomeFantasia());
-            statement.setString(3, fornecedor.getCpfCnpj());
-            statement.setString(4, fornecedor.getEmail());
-            statement.setString(5, fornecedor.getTelefone());
-            statement.setString(6, fornecedor.getEndereco());
-            statement.setString(7, fornecedor.getNumero());
-            statement.setString(8, fornecedor.getComplemento());
-            statement.setString(9, fornecedor.getBairro());
-            statement.setString(10, fornecedor.getCep());
-            statement.setObject(11, fornecedor.getCidadeId());
-            statement.setString(12, fornecedor.getRgInscricaoEstadual());
-            statement.setBoolean(13, fornecedor.getAtivo() != null ? fornecedor.getAtivo() : true);
-            statement.setObject(14, fornecedor.getCondicaoPagamentoId());
-            statement.setBigDecimal(15, fornecedor.getLimiteCredito());
-            statement.setString(16, fornecedor.getObservacao());
-            statement.setLong(17, fornecedor.getId());
+            statement.setObject(1, fornecedor.getTipo());
+            statement.setString(2, fornecedor.getRazaoSocial());
+            statement.setString(3, fornecedor.getNomeFantasia());
+            statement.setString(4, fornecedor.getCpfCnpj());
+            statement.setString(5, fornecedor.getEmail());
+            statement.setString(6, fornecedor.getTelefone());
+            statement.setString(7, fornecedor.getEndereco());
+            statement.setString(8, fornecedor.getNumero());
+            statement.setString(9, fornecedor.getComplemento());
+            statement.setString(10, fornecedor.getBairro());
+            statement.setString(11, fornecedor.getCep());
+            statement.setObject(12, fornecedor.getCidadeId());
+            statement.setString(13, fornecedor.getRgInscricaoEstadual());
+            statement.setBoolean(14, fornecedor.getAtivo() != null ? fornecedor.getAtivo() : true);
+            statement.setObject(15, fornecedor.getCondicaoPagamentoId());
+            statement.setBigDecimal(16, fornecedor.getLimiteCredito());
+            statement.setString(17, fornecedor.getObservacao());
+            statement.setLong(18, fornecedor.getId());
             statement.executeUpdate();
 
         } catch (SQLException e) {
