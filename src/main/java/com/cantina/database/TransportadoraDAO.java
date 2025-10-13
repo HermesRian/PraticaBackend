@@ -1,22 +1,24 @@
 package com.cantina.database;
 
 import com.cantina.entities.Transportadora;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class TransportadoraDAO {
 
     public void salvar(Transportadora transportadora) {
-        String sql = "INSERT INTO transportadora (razao_social, nome_fantasia, cnpj, email, telefone, endereco, numero, complemento, bairro, cidade_id, cep, tipo,  rg_inscricao_estadual, condicao_pagamento_id, observacao, ativo, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO transportadora (razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cidade_id, cep, tipo, rg_inscricao_estadual, condicao_pagamento_id, observacao, ativo, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, transportadora.getRazaoSocial());
             statement.setString(2, transportadora.getNomeFantasia());
-            statement.setString(3, transportadora.getCnpj());
+            statement.setString(3, transportadora.getCpfCnpj());
             statement.setString(4, transportadora.getEmail());
             statement.setString(5, transportadora.getTelefone());
             statement.setString(6, transportadora.getEndereco());
@@ -49,7 +51,7 @@ public class TransportadoraDAO {
                 transportadora.setId(resultSet.getLong("id"));
                 transportadora.setRazaoSocial(resultSet.getString("razao_social"));
                 transportadora.setNomeFantasia(resultSet.getString("nome_fantasia"));
-                transportadora.setCnpj(resultSet.getString("cnpj"));
+                transportadora.setCpfCnpj(resultSet.getString("cpf_cnpj"));
                 transportadora.setEmail(resultSet.getString("email"));
                 transportadora.setTelefone(resultSet.getString("telefone"));
                 transportadora.setEndereco(resultSet.getString("endereco"));
@@ -63,8 +65,8 @@ public class TransportadoraDAO {
                 transportadora.setCondicaoPagamentoId(resultSet.getObject("condicao_pagamento_id", Long.class));
                 transportadora.setObservacao(resultSet.getString("observacao"));
                 transportadora.setAtivo(resultSet.getBoolean("ativo"));
-                transportadora.setDataCriacao(resultSet.getTimestamp("created_at"));
-                transportadora.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+                transportadora.setDataCriacao(resultSet.getDate("created_at"));
+                transportadora.setUltimaModificacao(resultSet.getDate("updated_at"));
                 transportadoras.add(transportadora);
             }
 
@@ -90,7 +92,7 @@ public class TransportadoraDAO {
                 transportadora.setId(resultSet.getLong("id"));
                 transportadora.setRazaoSocial(resultSet.getString("razao_social"));
                 transportadora.setNomeFantasia(resultSet.getString("nome_fantasia"));
-                transportadora.setCnpj(resultSet.getString("cnpj"));
+                transportadora.setCpfCnpj(resultSet.getString("cpf_cnpj"));
                 transportadora.setEmail(resultSet.getString("email"));
                 transportadora.setTelefone(resultSet.getString("telefone"));
                 transportadora.setEndereco(resultSet.getString("endereco"));
@@ -104,8 +106,8 @@ public class TransportadoraDAO {
                 transportadora.setCondicaoPagamentoId(resultSet.getObject("condicao_pagamento_id", Long.class));
                 transportadora.setObservacao(resultSet.getString("observacao"));
                 transportadora.setAtivo(resultSet.getBoolean("ativo"));
-                transportadora.setDataCriacao(resultSet.getTimestamp("created_at"));
-                transportadora.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+                transportadora.setDataCriacao(resultSet.getDate("created_at"));
+                transportadora.setUltimaModificacao(resultSet.getDate("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -123,7 +125,7 @@ public class TransportadoraDAO {
 
             statement.setString(1, transportadora.getRazaoSocial());
             statement.setString(2, transportadora.getNomeFantasia());
-            statement.setString(3, transportadora.getCnpj());
+            statement.setString(3, transportadora.getCpfCnpj());
             statement.setString(4, transportadora.getEmail());
             statement.setString(5, transportadora.getTelefone());
             statement.setString(6, transportadora.getEndereco());

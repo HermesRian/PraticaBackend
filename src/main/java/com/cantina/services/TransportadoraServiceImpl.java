@@ -2,10 +2,11 @@ package com.cantina.services;
 
 import com.cantina.database.TransportadoraDAO;
 import com.cantina.entities.Transportadora;
-import com.cantina.services.TransportadoraService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class TransportadoraServiceImpl implements TransportadoraService {
 
     private final TransportadoraDAO transportadoraDAO;
@@ -15,8 +16,9 @@ public class TransportadoraServiceImpl implements TransportadoraService {
     }
 
     @Override
-    public void salvar(Transportadora transportadora) {
+    public Transportadora salvar(Transportadora transportadora) {
         transportadoraDAO.salvar(transportadora);
+        return transportadora;
     }
 
     @Override
@@ -30,8 +32,9 @@ public class TransportadoraServiceImpl implements TransportadoraService {
     }
 
     @Override
-    public void atualizar(Transportadora transportadora) {
+    public Transportadora atualizar(Transportadora transportadora) {
         transportadoraDAO.atualizar(transportadora);
+        return transportadora;
     }
 
     @Override
