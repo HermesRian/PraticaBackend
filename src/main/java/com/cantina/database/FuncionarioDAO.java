@@ -12,8 +12,9 @@ import java.util.List;
 public class FuncionarioDAO {
 
     public void salvar(Funcionario funcionario) {
-        String sql = "INSERT INTO funcionario (nome, cargo, salario, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo, data_admissao, data_demissao, apelido, rg_inscricao_estadual, cnh, data_validade_cnh, sexo, observacao, estado_civil, is_brasileiro, nacionalidade, data_nascimento, funcao_funcionario_id, cpf_cnpj) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO funcionario (nome, cargo, salario, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo, data_admissao, data_demissao, apelido, rg_inscricao_estadual, cnh, data_validade_cnh, sexo, observacao, estado_civil, is_brasileiro, nacionalidade, data_nascimento, funcao_funcionario_id, cpf_cnpj, created_at, updated_at) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -106,7 +107,7 @@ public class FuncionarioDAO {
     }
 
     public void atualizar(Funcionario funcionario) {
-        String sql = "UPDATE funcionario SET nome = ?, cargo = ?, salario = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, ativo = ?, data_admissao = ?, data_demissao = ?, apelido = ?, rg_inscricao_estadual = ?, cnh = ?, data_validade_cnh = ?, sexo = ?, observacao = ?, estado_civil = ?, is_brasileiro = ?, nacionalidade = ?, data_nascimento = ?, funcao_funcionario_id = ?, cpf_cnpj = ? WHERE id = ?";
+        String sql = "UPDATE funcionario SET nome = ?, cargo = ?, salario = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, ativo = ?, data_admissao = ?, data_demissao = ?, apelido = ?, rg_inscricao_estadual = ?, cnh = ?, data_validade_cnh = ?, sexo = ?, observacao = ?, estado_civil = ?, is_brasileiro = ?, nacionalidade = ?, data_nascimento = ?, funcao_funcionario_id = ?, cpf_cnpj = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -163,8 +164,9 @@ public class FuncionarioDAO {
         funcionario.setDataAdmissao(resultSet.getDate("data_admissao"));
         funcionario.setDataDemissao(resultSet.getDate("data_demissao"));
         funcionario.setApelido(resultSet.getString("apelido"));
-        funcionario.setDataCriacao(resultSet.getTimestamp("data_criacao"));
-        funcionario.setDataAlteracao(resultSet.getTimestamp("data_alteracao"));
+        funcionario.setDataCriacao(resultSet.getDate("created_at"));
+        funcionario.setDataAlteracao(resultSet.getDate("updated_at"));
+
         funcionario.setRgInscricaoEstadual(resultSet.getString("rg_inscricao_estadual"));
         funcionario.setCnh(resultSet.getString("cnh"));
         funcionario.setDataValidadeCnh(resultSet.getDate("data_validade_cnh"));

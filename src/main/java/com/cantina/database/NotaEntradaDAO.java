@@ -12,50 +12,51 @@ import java.util.List;
 public class NotaEntradaDAO {
 
     public void salvar(NotaEntrada notaEntrada) {
-        String sql = "INSERT INTO nota_entrada (numero_sequencial, numero, codigo, modelo, serie, codigo_fornecedor, " +
-                "fornecedor_id, data_emissao, data_chegada, data_entrega_realizada, condicao_pagamento_id, " +
-                "forma_pagamento_id, funcionario_id, status, tipo_frete, transportadora_id, valor_frete, " +
-                "valor_seguro, outras_despesas, valor_desconto, valor_acrescimo, total_produtos, total_a_pagar, " +
-                "valor_produtos, valor_total, observacoes, ativo, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO nota_entrada (numero, codigo, modelo, serie, fornecedor_id, " +
+                "data_emissao, data_chegada, data_recebimento, condicao_pagamento_id, status, " +
+                "tipo_frete, transportadora_id, valor_frete, valor_seguro, outras_despesas, " +
+                "valor_desconto, valor_produtos, valor_total, observacoes, ativo, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setObject(1, notaEntrada.getNumeroSequencial());
-            statement.setString(2, notaEntrada.getNumero());
-            statement.setString(3, notaEntrada.getCodigo());
-            statement.setString(4, notaEntrada.getModelo());
-            statement.setString(5, notaEntrada.getSerie());
-            statement.setString(6, notaEntrada.getCodigoFornecedor());
-            statement.setLong(7, notaEntrada.getFornecedorId() != null ? notaEntrada.getFornecedorId() :
+            if (notaEntrada.getItens() != null && !notaEntrada.getItens().isEmpty()) {
+                for (ItemNotaEntrada item : notaEntrada.getItens()) {
+                    calcularValorTotalItem(item);
+                }
+            }
+
+            calcularValores(notaEntrada);
+
+            statement.setString(1, notaEntrada.getNumero());
+            statement.setString(2, notaEntrada.getCodigo());
+            statement.setString(3, notaEntrada.getModelo());
+            statement.setString(4, notaEntrada.getSerie());
+            statement.setLong(5, notaEntrada.getFornecedorId() != null ? notaEntrada.getFornecedorId() :
                     (notaEntrada.getFornecedor() != null ? notaEntrada.getFornecedor().getId() : null));
 
-            statement.setDate(8, notaEntrada.getDataEmissao() != null ? new java.sql.Date(notaEntrada.getDataEmissao().getTime()) : null);
-            statement.setDate(9, notaEntrada.getDataChegada() != null ? new java.sql.Date(notaEntrada.getDataChegada().getTime()) : null);
-            statement.setDate(10, notaEntrada.getDataEntregaRealizada() != null ? new java.sql.Date(notaEntrada.getDataEntregaRealizada().getTime()) : null);
+            statement.setDate(6, notaEntrada.getDataEmissao() != null ? new java.sql.Date(notaEntrada.getDataEmissao().getTime()) : null);
+            statement.setDate(7, notaEntrada.getDataChegada() != null ? new java.sql.Date(notaEntrada.getDataChegada().getTime()) : null);
+            statement.setDate(8, notaEntrada.getDataRecebimento() != null ? new java.sql.Date(notaEntrada.getDataRecebimento().getTime()) : null);
 
-            statement.setLong(11, notaEntrada.getCondicaoPagamentoId() != null ? notaEntrada.getCondicaoPagamentoId() :
+            statement.setLong(9, notaEntrada.getCondicaoPagamentoId() != null ? notaEntrada.getCondicaoPagamentoId() :
                     (notaEntrada.getCondicaoPagamento() != null ? notaEntrada.getCondicaoPagamento().getId() : null));
-            statement.setObject(12, notaEntrada.getFormaPagamentoId() != null ? notaEntrada.getFormaPagamentoId() :
-                    (notaEntrada.getFormaPagamento() != null ? notaEntrada.getFormaPagamento().getId() : null));
-            statement.setObject(13, notaEntrada.getFuncionarioId());
-            statement.setString(14, notaEntrada.getStatus() != null ? notaEntrada.getStatus() : "PENDENTE");
-            statement.setString(15, notaEntrada.getTipoFrete() != null ? notaEntrada.getTipoFrete() : "CIF");
-            statement.setObject(16, notaEntrada.getTransportadoraId() != null ? notaEntrada.getTransportadoraId() :
+            statement.setString(10, notaEntrada.getStatus() != null ? notaEntrada.getStatus() : "PENDENTE");
+            statement.setString(11, notaEntrada.getTipoFrete() != null ? notaEntrada.getTipoFrete() : "CIF");
+            statement.setObject(12, notaEntrada.getTransportadoraId() != null ? notaEntrada.getTransportadoraId() :
                     (notaEntrada.getTransportadora() != null ? notaEntrada.getTransportadora().getId() : null));
 
-            statement.setBigDecimal(17, notaEntrada.getValorFrete() != null ? notaEntrada.getValorFrete() : BigDecimal.ZERO);
-            statement.setBigDecimal(18, notaEntrada.getValorSeguro() != null ? notaEntrada.getValorSeguro() : BigDecimal.ZERO);
-            statement.setBigDecimal(19, notaEntrada.getOutrasDespesas() != null ? notaEntrada.getOutrasDespesas() : BigDecimal.ZERO);
-            statement.setBigDecimal(20, notaEntrada.getValorDesconto() != null ? notaEntrada.getValorDesconto() : BigDecimal.ZERO);
-            statement.setBigDecimal(21, notaEntrada.getValorAcrescimo() != null ? notaEntrada.getValorAcrescimo() : BigDecimal.ZERO);
-            statement.setBigDecimal(22, notaEntrada.getTotalProdutos() != null ? notaEntrada.getTotalProdutos() : BigDecimal.ZERO);
-            statement.setBigDecimal(23, notaEntrada.getTotalAPagar() != null ? notaEntrada.getTotalAPagar() : BigDecimal.ZERO);
-            statement.setBigDecimal(24, notaEntrada.getValorProdutos() != null ? notaEntrada.getValorProdutos() : BigDecimal.ZERO);
-            statement.setBigDecimal(25, notaEntrada.getValorTotal() != null ? notaEntrada.getValorTotal() : BigDecimal.ZERO);
-            statement.setString(26, notaEntrada.getObservacoes());
-            statement.setBoolean(27, notaEntrada.getAtivo() != null ? notaEntrada.getAtivo() : true);
+            statement.setBigDecimal(13, notaEntrada.getValorFrete() != null ? notaEntrada.getValorFrete() : BigDecimal.ZERO);
+            statement.setBigDecimal(14, notaEntrada.getValorSeguro() != null ? notaEntrada.getValorSeguro() : BigDecimal.ZERO);
+            statement.setBigDecimal(15, notaEntrada.getOutrasDespesas() != null ? notaEntrada.getOutrasDespesas() : BigDecimal.ZERO);
+            statement.setBigDecimal(16, notaEntrada.getValorDesconto() != null ? notaEntrada.getValorDesconto() : BigDecimal.ZERO);
+
+            statement.setBigDecimal(17, notaEntrada.getValorProdutos());
+            statement.setBigDecimal(18, notaEntrada.getValorTotal());
+
+            statement.setString(19, notaEntrada.getObservacoes());
+            statement.setBoolean(20, notaEntrada.getAtivo() != null ? notaEntrada.getAtivo() : true);
 
             statement.executeUpdate();
 
@@ -64,11 +65,17 @@ public class NotaEntradaDAO {
                 notaEntrada.setId(generatedKeys.getLong(1));
             }
 
+            if (notaEntrada.getItens() != null && !notaEntrada.getItens().isEmpty()) {
+                ItemNotaEntradaDAO itemDAO = new ItemNotaEntradaDAO();
+                itemDAO.salvarLista(notaEntrada.getId(), notaEntrada.getItens());
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao salvar nota de entrada: " + e.getMessage(), e);
         }
     }
+
 
     public List<NotaEntrada> listarTodas() {
         List<NotaEntrada> notasEntrada = new ArrayList<>();
@@ -132,53 +139,53 @@ public class NotaEntradaDAO {
     }
 
     public void atualizar(NotaEntrada notaEntrada) {
-        String sql = "UPDATE nota_entrada SET numero_sequencial = ?, numero = ?, codigo = ?, modelo = ?, serie = ?, " +
-                "codigo_fornecedor = ?, fornecedor_id = ?, data_emissao = ?, data_chegada = ?, data_entrega_realizada = ?, " +
-                "condicao_pagamento_id = ?, forma_pagamento_id = ?, funcionario_id = ?, status = ?, tipo_frete = ?, " +
-                "transportadora_id = ?, valor_frete = ?, valor_seguro = ?, outras_despesas = ?, valor_desconto = ?, " +
-                "valor_acrescimo = ?, total_produtos = ?, total_a_pagar = ?, valor_produtos = ?, valor_total = ?, " +
-                "observacoes = ?, ativo = ?, updated_at = NOW() WHERE id = ?";
+        calcularValores(notaEntrada);
+
+        String sql = "UPDATE nota_entrada SET numero = ?, codigo = ?, modelo = ?, serie = ?, " +
+                "fornecedor_id = ?, data_emissao = ?, data_chegada = ?, data_recebimento = ?, " +
+                "condicao_pagamento_id = ?, status = ?, tipo_frete = ?, transportadora_id = ?, " +
+                "valor_frete = ?, valor_seguro = ?, outras_despesas = ?, valor_desconto = ?, " +
+                "valor_produtos = ?, valor_total = ?, observacoes = ?, ativo = ?, updated_at = NOW() " +
+                "WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setObject(1, notaEntrada.getNumeroSequencial());
-            statement.setString(2, notaEntrada.getNumero());
-            statement.setString(3, notaEntrada.getCodigo());
-            statement.setString(4, notaEntrada.getModelo());
-            statement.setString(5, notaEntrada.getSerie());
-            statement.setString(6, notaEntrada.getCodigoFornecedor());
-            statement.setLong(7, notaEntrada.getFornecedorId() != null ? notaEntrada.getFornecedorId() :
+            statement.setString(1, notaEntrada.getNumero());
+            statement.setString(2, notaEntrada.getCodigo());
+            statement.setString(3, notaEntrada.getModelo());
+            statement.setString(4, notaEntrada.getSerie());
+            statement.setLong(5, notaEntrada.getFornecedorId() != null ? notaEntrada.getFornecedorId() :
                     (notaEntrada.getFornecedor() != null ? notaEntrada.getFornecedor().getId() : null));
 
-            statement.setDate(8, notaEntrada.getDataEmissao() != null ? new java.sql.Date(notaEntrada.getDataEmissao().getTime()) : null);
-            statement.setDate(9, notaEntrada.getDataChegada() != null ? new java.sql.Date(notaEntrada.getDataChegada().getTime()) : null);
-            statement.setDate(10, notaEntrada.getDataEntregaRealizada() != null ? new java.sql.Date(notaEntrada.getDataEntregaRealizada().getTime()) : null);
+            statement.setDate(6, notaEntrada.getDataEmissao() != null ? new java.sql.Date(notaEntrada.getDataEmissao().getTime()) : null);
+            statement.setDate(7, notaEntrada.getDataChegada() != null ? new java.sql.Date(notaEntrada.getDataChegada().getTime()) : null);
+            statement.setDate(8, notaEntrada.getDataRecebimento() != null ? new java.sql.Date(notaEntrada.getDataRecebimento().getTime()) : null);
 
-            statement.setLong(11, notaEntrada.getCondicaoPagamentoId() != null ? notaEntrada.getCondicaoPagamentoId() :
+            statement.setLong(9, notaEntrada.getCondicaoPagamentoId() != null ? notaEntrada.getCondicaoPagamentoId() :
                     (notaEntrada.getCondicaoPagamento() != null ? notaEntrada.getCondicaoPagamento().getId() : null));
-            statement.setObject(12, notaEntrada.getFormaPagamentoId() != null ? notaEntrada.getFormaPagamentoId() :
-                    (notaEntrada.getFormaPagamento() != null ? notaEntrada.getFormaPagamento().getId() : null));
-            statement.setObject(13, notaEntrada.getFuncionarioId());
-            statement.setString(14, notaEntrada.getStatus() != null ? notaEntrada.getStatus() : "PENDENTE");
-            statement.setString(15, notaEntrada.getTipoFrete() != null ? notaEntrada.getTipoFrete() : "CIF");
-            statement.setObject(16, notaEntrada.getTransportadoraId() != null ? notaEntrada.getTransportadoraId() :
+            statement.setString(10, notaEntrada.getStatus() != null ? notaEntrada.getStatus() : "PENDENTE");
+            statement.setString(11, notaEntrada.getTipoFrete() != null ? notaEntrada.getTipoFrete() : "CIF");
+            statement.setObject(12, notaEntrada.getTransportadoraId() != null ? notaEntrada.getTransportadoraId() :
                     (notaEntrada.getTransportadora() != null ? notaEntrada.getTransportadora().getId() : null));
 
-            statement.setBigDecimal(17, notaEntrada.getValorFrete() != null ? notaEntrada.getValorFrete() : BigDecimal.ZERO);
-            statement.setBigDecimal(18, notaEntrada.getValorSeguro() != null ? notaEntrada.getValorSeguro() : BigDecimal.ZERO);
-            statement.setBigDecimal(19, notaEntrada.getOutrasDespesas() != null ? notaEntrada.getOutrasDespesas() : BigDecimal.ZERO);
-            statement.setBigDecimal(20, notaEntrada.getValorDesconto() != null ? notaEntrada.getValorDesconto() : BigDecimal.ZERO);
-            statement.setBigDecimal(21, notaEntrada.getValorAcrescimo() != null ? notaEntrada.getValorAcrescimo() : BigDecimal.ZERO);
-            statement.setBigDecimal(22, notaEntrada.getTotalProdutos() != null ? notaEntrada.getTotalProdutos() : BigDecimal.ZERO);
-            statement.setBigDecimal(23, notaEntrada.getTotalAPagar() != null ? notaEntrada.getTotalAPagar() : BigDecimal.ZERO);
-            statement.setBigDecimal(24, notaEntrada.getValorProdutos() != null ? notaEntrada.getValorProdutos() : BigDecimal.ZERO);
-            statement.setBigDecimal(25, notaEntrada.getValorTotal() != null ? notaEntrada.getValorTotal() : BigDecimal.ZERO);
-            statement.setString(26, notaEntrada.getObservacoes());
-            statement.setBoolean(27, notaEntrada.getAtivo() != null ? notaEntrada.getAtivo() : true);
-            statement.setLong(28, notaEntrada.getId());
+            statement.setBigDecimal(13, notaEntrada.getValorFrete() != null ? notaEntrada.getValorFrete() : BigDecimal.ZERO);
+            statement.setBigDecimal(14, notaEntrada.getValorSeguro() != null ? notaEntrada.getValorSeguro() : BigDecimal.ZERO);
+            statement.setBigDecimal(15, notaEntrada.getOutrasDespesas() != null ? notaEntrada.getOutrasDespesas() : BigDecimal.ZERO);
+            statement.setBigDecimal(16, notaEntrada.getValorDesconto() != null ? notaEntrada.getValorDesconto() : BigDecimal.ZERO);
+            statement.setBigDecimal(17, notaEntrada.getValorProdutos());
+            statement.setBigDecimal(18, notaEntrada.getValorTotal());
+            statement.setString(19, notaEntrada.getObservacoes());
+            statement.setBoolean(20, notaEntrada.getAtivo() != null ? notaEntrada.getAtivo() : true);
+            statement.setLong(21, notaEntrada.getId());
 
             statement.executeUpdate();
+
+            if (notaEntrada.getItens() != null) {
+                ItemNotaEntradaDAO itemDAO = new ItemNotaEntradaDAO();
+                itemDAO.excluirPorNotaEntrada(notaEntrada.getId());
+                itemDAO.salvarLista(notaEntrada.getId(), notaEntrada.getItens());
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -216,19 +223,15 @@ public class NotaEntradaDAO {
     private NotaEntrada mapearNotaEntrada(ResultSet resultSet) throws SQLException {
         NotaEntrada notaEntrada = new NotaEntrada();
         notaEntrada.setId(resultSet.getLong("id"));
-        notaEntrada.setNumeroSequencial((Integer) resultSet.getObject("numero_sequencial"));
         notaEntrada.setNumero(resultSet.getString("numero"));
         notaEntrada.setCodigo(resultSet.getString("codigo"));
         notaEntrada.setModelo(resultSet.getString("modelo"));
         notaEntrada.setSerie(resultSet.getString("serie"));
-        notaEntrada.setCodigoFornecedor(resultSet.getString("codigo_fornecedor"));
         notaEntrada.setFornecedorId(resultSet.getLong("fornecedor_id"));
         notaEntrada.setDataEmissao(resultSet.getDate("data_emissao"));
         notaEntrada.setDataChegada(resultSet.getDate("data_chegada"));
-        notaEntrada.setDataEntregaRealizada(resultSet.getDate("data_entrega_realizada"));
+        notaEntrada.setDataRecebimento(resultSet.getDate("data_recebimento"));
         notaEntrada.setCondicaoPagamentoId(resultSet.getLong("condicao_pagamento_id"));
-        notaEntrada.setFormaPagamentoId((Long) resultSet.getObject("forma_pagamento_id"));
-        notaEntrada.setFuncionarioId((Long) resultSet.getObject("funcionario_id"));
         notaEntrada.setStatus(resultSet.getString("status"));
         notaEntrada.setTipoFrete(resultSet.getString("tipo_frete"));
         notaEntrada.setTransportadoraId((Long) resultSet.getObject("transportadora_id"));
@@ -236,9 +239,6 @@ public class NotaEntradaDAO {
         notaEntrada.setValorSeguro(resultSet.getBigDecimal("valor_seguro"));
         notaEntrada.setOutrasDespesas(resultSet.getBigDecimal("outras_despesas"));
         notaEntrada.setValorDesconto(resultSet.getBigDecimal("valor_desconto"));
-        notaEntrada.setValorAcrescimo(resultSet.getBigDecimal("valor_acrescimo"));
-        notaEntrada.setTotalProdutos(resultSet.getBigDecimal("total_produtos"));
-        notaEntrada.setTotalAPagar(resultSet.getBigDecimal("total_a_pagar"));
         notaEntrada.setValorProdutos(resultSet.getBigDecimal("valor_produtos"));
         notaEntrada.setValorTotal(resultSet.getBigDecimal("valor_total"));
         notaEntrada.setObservacoes(resultSet.getString("observacoes"));
@@ -246,6 +246,60 @@ public class NotaEntradaDAO {
         notaEntrada.setDataCriacao(resultSet.getDate("created_at"));
         notaEntrada.setUltimaModificacao(resultSet.getDate("updated_at"));
 
+        ItemNotaEntradaDAO itemDAO = new ItemNotaEntradaDAO();
+        notaEntrada.setItens(itemDAO.buscarPorNotaEntrada(notaEntrada.getId()));
+
         return notaEntrada;
     }
+
+
+    private void calcularValores(NotaEntrada notaEntrada) {
+        BigDecimal valorProdutos = BigDecimal.ZERO;
+        BigDecimal valorDescontoTotal = BigDecimal.ZERO;
+
+        if (notaEntrada.getItens() != null && !notaEntrada.getItens().isEmpty()) {
+            for (ItemNotaEntrada item : notaEntrada.getItens()) {
+                BigDecimal quantidade = item.getQuantidade() != null ? item.getQuantidade() : BigDecimal.ZERO;
+                BigDecimal valorUnitario = item.getValorUnitario() != null ? item.getValorUnitario() : BigDecimal.ZERO;
+                BigDecimal valorBrutoItem = quantidade.multiply(valorUnitario);
+
+                valorProdutos = valorProdutos.add(valorBrutoItem);
+
+                BigDecimal descontoItem = item.getValorDesconto() != null ? item.getValorDesconto() : BigDecimal.ZERO;
+                valorDescontoTotal = valorDescontoTotal.add(descontoItem);
+            }
+        }
+
+        notaEntrada.setValorProdutos(valorProdutos);
+        notaEntrada.setValorDesconto(valorDescontoTotal);
+
+        BigDecimal valorTotal = valorProdutos;
+
+        valorTotal = valorTotal.subtract(valorDescontoTotal);
+
+        if (notaEntrada.getValorFrete() != null) {
+            valorTotal = valorTotal.add(notaEntrada.getValorFrete());
+        }
+        if (notaEntrada.getValorSeguro() != null) {
+            valorTotal = valorTotal.add(notaEntrada.getValorSeguro());
+        }
+        if (notaEntrada.getOutrasDespesas() != null) {
+            valorTotal = valorTotal.add(notaEntrada.getOutrasDespesas());
+        }
+
+        notaEntrada.setValorTotal(valorTotal);
+    }
+
+
+    private void calcularValorTotalItem(ItemNotaEntrada item) {
+        if (item.getValorTotal() == null || item.getValorTotal().compareTo(BigDecimal.ZERO) == 0) {
+            BigDecimal quantidade = item.getQuantidade() != null ? item.getQuantidade() : BigDecimal.ZERO;
+            BigDecimal valorUnitario = item.getValorUnitario() != null ? item.getValorUnitario() : BigDecimal.ZERO;
+            BigDecimal valorDesconto = item.getValorDesconto() != null ? item.getValorDesconto() : BigDecimal.ZERO;
+
+            BigDecimal valorTotal = quantidade.multiply(valorUnitario).subtract(valorDesconto);
+            item.setValorTotal(valorTotal);
+        }
+    }
+
 }

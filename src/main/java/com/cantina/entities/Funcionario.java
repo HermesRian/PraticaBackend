@@ -24,8 +24,8 @@ public class Funcionario {
     private Date dataAdmissao;
     private Date dataDemissao;
     private String apelido;
-    private Timestamp dataCriacao;
-    private Timestamp dataAlteracao;
+    private Date dataCriacao;
+    private Date dataAlteracao;
     private String rgInscricaoEstadual;
     private String cnh;
     private Date dataValidadeCnh;
