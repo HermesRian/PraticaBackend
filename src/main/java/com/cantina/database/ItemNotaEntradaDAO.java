@@ -149,6 +149,12 @@ public class ItemNotaEntradaDAO {
         item.setCustoPrecoFinal(resultSet.getBigDecimal("custo_preco_final"));
         item.setDataCriacao(resultSet.getTimestamp("created_at"));
         item.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+
+        if (item.getProdutoId() != null) {
+            ProdutoDAO produtoDAO = new ProdutoDAO();
+            item.setProduto(produtoDAO.buscarPorId(item.getProdutoId()));
+        }
+
         return item;
     }
 

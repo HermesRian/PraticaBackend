@@ -249,8 +249,27 @@ public class NotaEntradaDAO {
         ItemNotaEntradaDAO itemDAO = new ItemNotaEntradaDAO();
         notaEntrada.setItens(itemDAO.buscarPorNotaEntrada(notaEntrada.getId()));
 
+        if (notaEntrada.getFornecedorId() != null) {
+            FornecedorDAO fornecedorDAO = new FornecedorDAO();
+            notaEntrada.setFornecedor(fornecedorDAO.buscarPorId(notaEntrada.getFornecedorId()));
+        }
+
+        if (notaEntrada.getCondicaoPagamentoId() != null) {
+            CondicaoPagamentoDAO condicaoPagamentoDAO = new CondicaoPagamentoDAO();
+            notaEntrada.setCondicaoPagamento(condicaoPagamentoDAO.buscarPorId(notaEntrada.getCondicaoPagamentoId()));
+        }
+
+        if (notaEntrada.getTransportadoraId() != null) {
+            TransportadoraDAO transportadoraDAO = new TransportadoraDAO();
+            notaEntrada.setTransportadora(transportadoraDAO.buscarPorId(notaEntrada.getTransportadoraId()));
+        }
+
+        ItemNotaEntradaDAO itemNotaEntradaDAO = new ItemNotaEntradaDAO();
+        notaEntrada.setItens(itemDAO.buscarPorNotaEntrada(notaEntrada.getId()));
+
         return notaEntrada;
     }
+
 
 
     private void calcularValores(NotaEntrada notaEntrada) {
