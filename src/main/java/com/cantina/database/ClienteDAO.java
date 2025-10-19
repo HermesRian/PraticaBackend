@@ -23,7 +23,7 @@ public class ClienteDAO {
             }
         }
 
-        String sql = "INSERT INTO cliente (nome, cnpjCpf, endereco, numero, complemento, bairro, cep, cidade_id, telefone, email, status, " +
+        String sql = "INSERT INTO clientes (nome, cnpjCpf, endereco, numero, complemento, bairro, cep, cidade_id, telefone, email, status, " +
                 "apelido, limite_credito, nacionalidade, rg_inscricao_estadual, data_nascimento, estado_civil, tipo, sexo, " +
                 "condicao_pagamento_id, observacao, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
@@ -96,9 +96,9 @@ public class ClienteDAO {
     private boolean isClienteBrasileiro(Long cidadeId) {
         if (cidadeId == null) return false;
 
-        String sql = "SELECT p.nome FROM cidade c " +
-                     "JOIN estado e ON c.estado_id = e.id " +
-                     "JOIN pais p ON e.pais_id = p.id " +
+        String sql = "SELECT p.nome FROM cidades c " +
+                     "JOIN estados e ON c.estado_id = e.id " +
+                     "JOIN paises p ON e.pais_id = p.id " +
                      "WHERE c.id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -152,7 +152,7 @@ public class ClienteDAO {
 
     public List<Cliente> listarTodos() {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT * FROM cliente";
+        String sql = "SELECT * FROM clientes";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -169,7 +169,7 @@ public class ClienteDAO {
     }
 
     public Cliente buscarPorId(Long id) {
-        String sql = "SELECT * FROM cliente WHERE id = ?";
+        String sql = "SELECT * FROM clientes WHERE id = ?";
         Cliente cliente = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -199,7 +199,7 @@ public class ClienteDAO {
             }
         }
 
-        String sql = "UPDATE cliente SET nome = ?, cnpjCpf = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, " +
+        String sql = "UPDATE clientes SET nome = ?, cnpjCpf = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, " +
                 "cidade_id = ?, telefone = ?, email = ?, status = ?, apelido = ?, limite_credito = ?, nacionalidade = ?, " +
                 "rg_inscricao_estadual = ?, data_nascimento = ?, estado_civil = ?, tipo = ?, sexo = ?, " +
                 "condicao_pagamento_id = ?, observacao = ?, updated_at = NOW() " +
@@ -267,7 +267,7 @@ public class ClienteDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "UPDATE cliente SET status = false, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE clientes SET status = false, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

@@ -12,7 +12,7 @@ import java.util.List;
 public class FuncionarioDAO {
 
     public void salvar(Funcionario funcionario) {
-        String sql = "INSERT INTO funcionario (nome, cargo, salario, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo, data_admissao, data_demissao, apelido, rg_inscricao_estadual, cnh, data_validade_cnh, sexo, observacao, estado_civil, is_brasileiro, nacionalidade, data_nascimento, funcao_funcionario_id, cpf_cnpj, created_at, updated_at) " +
+        String sql = "INSERT INTO funcionarios (nome, cargo, salario, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo, data_admissao, data_demissao, apelido, rg_inscricao_estadual, cnh, data_validade_cnh, sexo, observacao, estado_civil, is_brasileiro, nacionalidade, data_nascimento, funcao_funcionario_id, cpf_cnpj, created_at, updated_at) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
 
@@ -54,7 +54,7 @@ public class FuncionarioDAO {
 
     public List<Funcionario> listarTodos() {
         List<Funcionario> funcionarios = new ArrayList<>();
-        String sql = "SELECT * FROM funcionario";
+        String sql = "SELECT * FROM funcionarios";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -73,7 +73,7 @@ public class FuncionarioDAO {
     }
 
     public Funcionario buscarPorId(Long id) {
-        String sql = "SELECT * FROM funcionario WHERE id = ?";
+        String sql = "SELECT * FROM funcionarios WHERE id = ?";
         Funcionario funcionario = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -94,7 +94,7 @@ public class FuncionarioDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM funcionario WHERE id = ?";
+        String sql = "DELETE FROM funcionarios WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -107,7 +107,7 @@ public class FuncionarioDAO {
     }
 
     public void atualizar(Funcionario funcionario) {
-        String sql = "UPDATE funcionario SET nome = ?, cargo = ?, salario = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, ativo = ?, data_admissao = ?, data_demissao = ?, apelido = ?, rg_inscricao_estadual = ?, cnh = ?, data_validade_cnh = ?, sexo = ?, observacao = ?, estado_civil = ?, is_brasileiro = ?, nacionalidade = ?, data_nascimento = ?, funcao_funcionario_id = ?, cpf_cnpj = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE funcionarios SET nome = ?, cargo = ?, salario = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, ativo = ?, data_admissao = ?, data_demissao = ?, apelido = ?, rg_inscricao_estadual = ?, cnh = ?, data_validade_cnh = ?, sexo = ?, observacao = ?, estado_civil = ?, is_brasileiro = ?, nacionalidade = ?, data_nascimento = ?, funcao_funcionario_id = ?, cpf_cnpj = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

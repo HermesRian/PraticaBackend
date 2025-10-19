@@ -12,7 +12,7 @@ import java.util.List;
 public class NotaEntradaDAO {
 
     public void salvar(NotaEntrada notaEntrada) {
-        String sql = "INSERT INTO nota_entrada (numero, codigo, modelo, serie, fornecedor_id, " +
+        String sql = "INSERT INTO notas_entrada (numero, codigo, modelo, serie, fornecedor_id, " +
                 "data_emissao, data_chegada, data_recebimento, condicao_pagamento_id, status, " +
                 "tipo_frete, transportadora_id, valor_frete, valor_seguro, outras_despesas, " +
                 "valor_desconto, valor_produtos, valor_total, observacoes, ativo, created_at, updated_at) " +
@@ -79,7 +79,7 @@ public class NotaEntradaDAO {
 
     public List<NotaEntrada> listarTodas() {
         List<NotaEntrada> notasEntrada = new ArrayList<>();
-        String sql = "SELECT * FROM nota_entrada WHERE ativo = true ORDER BY data_emissao DESC";
+        String sql = "SELECT * FROM notas_entrada WHERE ativo = true ORDER BY data_emissao DESC";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -97,7 +97,7 @@ public class NotaEntradaDAO {
     }
 
     public NotaEntrada buscarPorId(Long id) {
-        String sql = "SELECT * FROM nota_entrada WHERE id = ?";
+        String sql = "SELECT * FROM notas_entrada WHERE id = ?";
         NotaEntrada notaEntrada = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -118,7 +118,7 @@ public class NotaEntradaDAO {
     }
 
     public NotaEntrada buscarPorNumero(String numero) {
-        String sql = "SELECT * FROM nota_entrada WHERE numero = ?";
+        String sql = "SELECT * FROM notas_entrada WHERE numero = ?";
         NotaEntrada notaEntrada = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -141,7 +141,7 @@ public class NotaEntradaDAO {
     public void atualizar(NotaEntrada notaEntrada) {
         calcularValores(notaEntrada);
 
-        String sql = "UPDATE nota_entrada SET numero = ?, codigo = ?, modelo = ?, serie = ?, " +
+        String sql = "UPDATE notas_entrada SET numero = ?, codigo = ?, modelo = ?, serie = ?, " +
                 "fornecedor_id = ?, data_emissao = ?, data_chegada = ?, data_recebimento = ?, " +
                 "condicao_pagamento_id = ?, status = ?, tipo_frete = ?, transportadora_id = ?, " +
                 "valor_frete = ?, valor_seguro = ?, outras_despesas = ?, valor_desconto = ?, " +
@@ -194,7 +194,7 @@ public class NotaEntradaDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "UPDATE nota_entrada SET ativo = false, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE notas_entrada SET ativo = false, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -207,7 +207,7 @@ public class NotaEntradaDAO {
     }
 
     public void atualizarStatus(Long id, String novoStatus) {
-        String sql = "UPDATE nota_entrada SET status = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE notas_entrada SET status = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

@@ -11,7 +11,7 @@ import java.util.List;
 public class EstadoDAO {
 
     public Estado salvar(Estado estado) {
-        String sql = "INSERT INTO estado (nome, uf, pais_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO estados (nome, uf, pais_id) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -32,7 +32,7 @@ public class EstadoDAO {
 
     public List<Estado> listarTodos() {
         List<Estado> estados = new ArrayList<>();
-        String sql = "SELECT * FROM estado";
+        String sql = "SELECT * FROM estados";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -55,7 +55,7 @@ public class EstadoDAO {
     }
 
     public Estado buscarPorId(Long id) {
-        String sql = "SELECT * FROM estado WHERE id = ?";
+        String sql = "SELECT * FROM estados WHERE id = ?";
         Estado estado = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -80,7 +80,7 @@ public class EstadoDAO {
     }
 
     public void atualizar(Estado estado) {
-        String sql = "UPDATE estado SET nome = ?, uf = ?, pais_id = ? WHERE id = ?";
+        String sql = "UPDATE estados SET nome = ?, uf = ?, pais_id = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -96,7 +96,7 @@ public class EstadoDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM estado WHERE id = ?";
+        String sql = "DELETE FROM estados WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

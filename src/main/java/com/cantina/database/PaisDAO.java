@@ -11,7 +11,7 @@ import java.util.List;
 public class PaisDAO {
 
     public Pais salvar(Pais pais) {
-        String sql = "INSERT INTO pais (nome, sigla, ddi, status, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO paises (nome, sigla, ddi, status, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())";
         String generatedColumns[] = { "id" };
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -37,7 +37,7 @@ public class PaisDAO {
 
     public List<Pais> listarTodos() {
         List<Pais> paises = new ArrayList<>();
-        String sql = "SELECT * FROM pais";
+        String sql = "SELECT * FROM paises";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -63,7 +63,7 @@ public class PaisDAO {
     }
 
     public Pais buscarPorId(Long id) {
-        String sql = "SELECT * FROM pais WHERE id = ?";
+        String sql = "SELECT * FROM paises WHERE id = ?";
         Pais pais = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -91,7 +91,7 @@ public class PaisDAO {
     }
 
     public Pais atualizar(Long id, Pais pais) {
-        String sql = "UPDATE pais SET nome = ?, sigla = ?, ddi = ?, status = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE paises SET nome = ?, sigla = ?, ddi = ?, status = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -113,7 +113,7 @@ public class PaisDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM pais WHERE id = ?";
+        String sql = "DELETE FROM paises WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

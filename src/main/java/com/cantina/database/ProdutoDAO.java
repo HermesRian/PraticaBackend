@@ -14,7 +14,7 @@ import java.sql.*;
 public class ProdutoDAO {
 
     public void salvar(Produto produto) {
-        String sql = "INSERT INTO produto (nome, quantidade_estoque, descricao, codigo, status, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacao, created_at, updated_at, referencia, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)";
+        String sql = "INSERT INTO produtos (nome, quantidade_estoque, descricao, codigo, status, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacao, created_at, updated_at, referencia, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -43,7 +43,7 @@ public class ProdutoDAO {
 
     public List<Produto> listarTodos() {
         List<Produto> produtos = new ArrayList<>();
-        String sql = "SELECT * FROM produto";
+        String sql = "SELECT * FROM produtos";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -80,7 +80,7 @@ public class ProdutoDAO {
     }
 
     public Produto buscarPorId(Long id) {
-        String sql = "SELECT * FROM produto WHERE id = ?";
+        String sql = "SELECT * FROM produtos WHERE id = ?";
         Produto produto = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -118,7 +118,7 @@ public class ProdutoDAO {
     }
 
     public void atualizar(Produto produto) {
-        String sql = "UPDATE produto SET nome = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, status = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacao = ?, updated_at = NOW(), referencia = ?, categoria_id = ? WHERE id = ?";
+        String sql = "UPDATE produtos SET nome = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, status = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacao = ?, updated_at = NOW(), referencia = ?, categoria_id = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -147,7 +147,7 @@ public class ProdutoDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM produto WHERE id = ?";
+        String sql = "DELETE FROM produtos WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

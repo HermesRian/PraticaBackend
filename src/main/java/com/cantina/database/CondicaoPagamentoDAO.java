@@ -15,7 +15,7 @@ import com.cantina.database.ParcelaCondicaoPagamentoDAO;
 public class CondicaoPagamentoDAO {
 
     public void salvar(CondicaoPagamento condicaoPagamento) {
-        String sql = "INSERT INTO condicao_pagamento (nome, dias, parcelas, status, juros_percentual, multa_percentual, desconto_percentual, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO condicoes_pagamento (nome, dias, parcelas, status, juros_percentual, multa_percentual, desconto_percentual, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -42,7 +42,7 @@ public class CondicaoPagamentoDAO {
 
     public List<CondicaoPagamento> listarTodos() {
         List<CondicaoPagamento> condicoes = new ArrayList<>();
-        String sql = "SELECT * FROM condicao_pagamento";
+        String sql = "SELECT * FROM condicoes_pagamento";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -76,7 +76,7 @@ public class CondicaoPagamentoDAO {
     }
 
     public CondicaoPagamento buscarPorId(Long id) {
-        String sql = "SELECT * FROM condicao_pagamento WHERE id = ?";
+        String sql = "SELECT * FROM condicoes_pagamento WHERE id = ?";
         CondicaoPagamento condicao = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -110,9 +110,9 @@ public class CondicaoPagamentoDAO {
     }
 
     public void atualizar(CondicaoPagamento condicaoPagamento) {
-        String sqlCondicao = "UPDATE condicao_pagamento SET nome = ?, dias = ?, parcelas = ?, status = ?, juros_percentual = ?, multa_percentual = ?, desconto_percentual = ?, updated_at = NOW() WHERE id = ?";
-        String sqlExcluirParcelas = "DELETE FROM parcela_condicao_pagamento WHERE condicao_pagamento_id = ?";
-        String sqlInserirParcela = "INSERT INTO parcela_condicao_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id) VALUES (?, ?, ?, ?, ?)";
+        String sqlCondicao = "UPDATE condicoes_pagamento SET nome = ?, dias = ?, parcelas = ?, status = ?, juros_percentual = ?, multa_percentual = ?, desconto_percentual = ?, updated_at = NOW() WHERE id = ?";
+        String sqlExcluirParcelas = "DELETE FROM parcelas_condicoes_pagamento WHERE condicoes_pagamento_id = ?";
+        String sqlInserirParcela = "INSERT INTO parcelas_condicoes_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection()) {
             connection.setAutoCommit(false);
@@ -154,7 +154,7 @@ public class CondicaoPagamentoDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM condicao_pagamento WHERE id = ?";
+        String sql = "DELETE FROM condicoes_pagamento WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

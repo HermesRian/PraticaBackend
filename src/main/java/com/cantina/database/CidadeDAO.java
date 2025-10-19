@@ -11,7 +11,7 @@ import java.util.List;
 public class CidadeDAO {
 
     public Cidade salvar(Cidade cidade) {
-        String sql = "INSERT INTO cidade (nome, codigo_ibge, estado_id, status, created_at, updated_at, ddd) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)";
+        String sql = "INSERT INTO cidades (nome, codigo_ibge, estado_id, status, created_at, updated_at, ddd) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -30,7 +30,7 @@ public class CidadeDAO {
 
     public List<Cidade> listarTodas() {
         List<Cidade> cidades = new ArrayList<>();
-        String sql = "SELECT * FROM cidade";
+        String sql = "SELECT * FROM cidades";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -57,7 +57,7 @@ public class CidadeDAO {
     }
 
     public Cidade buscarPorId(Long id) {
-        String sql = "SELECT * FROM cidade WHERE id = ?";
+        String sql = "SELECT * FROM cidades WHERE id = ?";
         Cidade cidade = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -86,7 +86,7 @@ public class CidadeDAO {
     }
 
     public void atualizar(Cidade cidade) {
-        String sql = "UPDATE cidade SET nome = ?, codigo_ibge = ?, estado_id = ?, status = ?, updated_at = NOW(), ddd = ? WHERE id = ?";
+        String sql = "UPDATE cidades SET nome = ?, codigo_ibge = ?, estado_id = ?, status = ?, updated_at = NOW(), ddd = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -104,7 +104,7 @@ public class CidadeDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM cidade WHERE id = ?";
+        String sql = "DELETE FROM cidades WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

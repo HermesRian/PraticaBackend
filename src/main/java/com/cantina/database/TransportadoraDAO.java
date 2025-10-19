@@ -11,7 +11,7 @@ import java.util.List;
 public class TransportadoraDAO {
 
     public void salvar(Transportadora transportadora) {
-        String sql = "INSERT INTO transportadora (razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cidade_id, cep, tipo, rg_inscricao_estadual, condicao_pagamento_id, observacao, ativo, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO transportadoras (razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cidade_id, cep, tipo, rg_inscricao_estadual, condicao_pagamento_id, observacao, ativo, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -40,7 +40,7 @@ public class TransportadoraDAO {
 
     public List<Transportadora> listarTodas() {
         List<Transportadora> transportadoras = new ArrayList<>();
-        String sql = "SELECT * FROM transportadora";
+        String sql = "SELECT * FROM transportadoras";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -78,7 +78,7 @@ public class TransportadoraDAO {
     }
 
     public Transportadora buscarPorId(Long id) {
-        String sql = "SELECT * FROM transportadora WHERE id = ?";
+        String sql = "SELECT * FROM transportadoras WHERE id = ?";
         Transportadora transportadora = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -118,7 +118,7 @@ public class TransportadoraDAO {
     }
 
     public void atualizar(Transportadora transportadora) {
-        String sql = "UPDATE transportadora SET razao_social = ?, nome_fantasia = ?, cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cidade_id = ?, cep = ?, tipo = ?, rg_inscricao_estadual = ?, condicao_pagamento_id = ?, observacao = ?, ativo = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE transportadoras SET razao_social = ?, nome_fantasia = ?, cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cidade_id = ?, cep = ?, tipo = ?, rg_inscricao_estadual = ?, condicao_pagamento_id = ?, observacao = ?, ativo = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -147,7 +147,7 @@ public class TransportadoraDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM transportadora WHERE id = ?";
+        String sql = "DELETE FROM transportadoras WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

@@ -12,7 +12,7 @@ import java.util.List;
 public class FuncaoFuncionarioDAO {
 
     public void salvar(FuncaoFuncionario funcaoFuncionario) {
-        String sql = "INSERT INTO funcao_funcionario (descricao, status, nome, requer_cnh, carga_horaria, observacao, user_criacao, user_atualizacao, created_at, updated_at) " +
+        String sql = "INSERT INTO funcoes_funcionario (descricao, status, nome, requer_cnh, carga_horaria, observacao, user_criacao, user_atualizacao, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -35,7 +35,7 @@ public class FuncaoFuncionarioDAO {
 
     public List<FuncaoFuncionario> listarTodos() {
         List<FuncaoFuncionario> funcoes = new ArrayList<>();
-        String sql = "SELECT * FROM funcao_funcionario";
+        String sql = "SELECT * FROM funcoes_funcionario";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -54,7 +54,7 @@ public class FuncaoFuncionarioDAO {
     }
 
     public FuncaoFuncionario buscarPorId(Long id) {
-        String sql = "SELECT * FROM funcao_funcionario WHERE id = ?";
+        String sql = "SELECT * FROM funcoes_funcionario WHERE id = ?";
         FuncaoFuncionario funcaoFuncionario = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -75,7 +75,7 @@ public class FuncaoFuncionarioDAO {
     }
 
     public void atualizar(FuncaoFuncionario funcaoFuncionario) {
-        String sql = "UPDATE funcao_funcionario SET descricao = ?, status = ?, nome = ?, requer_cnh = ?, carga_horaria = ?, observacao = ?, user_atualizacao = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE funcoes_funcionario SET descricao = ?, status = ?, nome = ?, requer_cnh = ?, carga_horaria = ?, observacao = ?, user_atualizacao = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -96,7 +96,7 @@ public class FuncaoFuncionarioDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM funcao_funcionario WHERE id = ?";
+        String sql = "DELETE FROM funcoes_funcionario WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -110,7 +110,7 @@ public class FuncaoFuncionarioDAO {
 
     public List<FuncaoFuncionario> listarAtivos() {
         List<FuncaoFuncionario> funcoes = new ArrayList<>();
-        String sql = "SELECT * FROM funcao_funcionario WHERE status = true";
+        String sql = "SELECT * FROM funcoes_funcionario WHERE status = true";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);

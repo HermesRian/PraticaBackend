@@ -9,7 +9,7 @@ import java.util.List;
 public class MarcaDAO {
 
     public void salvar(Marca marca) {
-        String sql = "INSERT INTO marca (nome, ativo, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO marcas (nome, ativo, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -26,7 +26,7 @@ public class MarcaDAO {
 
     public List<Marca> listarTodos() {
         List<Marca> marcas = new ArrayList<>();
-        String sql = "SELECT * FROM marca";
+        String sql = "SELECT * FROM marcas";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -51,7 +51,7 @@ public class MarcaDAO {
     }
 
     public Marca buscarPorId(Long id) {
-        String sql = "SELECT * FROM marca WHERE id = ?";
+        String sql = "SELECT * FROM marcas WHERE id = ?";
         Marca marca = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -77,7 +77,7 @@ public class MarcaDAO {
     }
 
     public void atualizar(Marca marca) {
-        String sql = "UPDATE marca SET nome = ?, ativo = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE marcas SET nome = ?, ativo = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -94,7 +94,7 @@ public class MarcaDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM marca WHERE id = ?";
+        String sql = "DELETE FROM marcas WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

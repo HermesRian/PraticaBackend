@@ -15,7 +15,7 @@ import java.util.List;
 public class FornecedorDAO {
 
     public void salvar(Fornecedor fornecedor) {
-        String sql = "INSERT INTO fornecedor (tipo, razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, rg_inscricao_estadual, status, condicao_pagamento_id, limite_credito, created_at, updated_at, observacao) " +
+        String sql = "INSERT INTO fornecedores (tipo, razao_social, nome_fantasia, cpf_cnpj, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, rg_inscricao_estadual, status, condicao_pagamento_id, limite_credito, created_at, updated_at, observacao) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -50,7 +50,7 @@ public class FornecedorDAO {
 
     public List<Fornecedor> listarTodos() {
         List<Fornecedor> fornecedores = new ArrayList<>();
-        String sql = "SELECT * FROM fornecedor";
+        String sql = "SELECT * FROM fornecedores";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -89,7 +89,7 @@ public class FornecedorDAO {
     }
 
     public Fornecedor buscarPorId(Long id) {
-        String sql = "SELECT * FROM fornecedor WHERE id = ?";
+        String sql = "SELECT * FROM fornecedores WHERE id = ?";
         Fornecedor fornecedor = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -130,7 +130,7 @@ public class FornecedorDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM fornecedor WHERE id = ?";
+        String sql = "DELETE FROM fornecedores WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -143,7 +143,7 @@ public class FornecedorDAO {
         }
     }
     public void update(Fornecedor fornecedor) {
-        String sql = "UPDATE fornecedor SET tipo = ?, razao_social = ?, nome_fantasia = ?, cpf_cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro =?, cep = ?, cidade_id = ?, rg_inscricao_estadual = ?, status = ?, condicao_pagamento_id = ?, limite_credito = ?, updated_at = NOW(), observacao = ? WHERE id = ?";
+        String sql = "UPDATE fornecedores SET tipo = ?, razao_social = ?, nome_fantasia = ?, cpf_cnpj = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro =?, cep = ?, cidade_id = ?, rg_inscricao_estadual = ?, status = ?, condicao_pagamento_id = ?, limite_credito = ?, updated_at = NOW(), observacao = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 

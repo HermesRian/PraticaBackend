@@ -11,7 +11,7 @@ import java.util.List;
 public class ParcelaCondicaoPagamentoDAO {
 
     public void salvar(ParcelaCondicaoPagamento parcela) {
-        String sql = "INSERT INTO parcela_condicao_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id, data_vencimento, situacao, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO parcelas_condicao_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id, data_vencimento, situacao, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -45,7 +45,7 @@ public class ParcelaCondicaoPagamentoDAO {
 
     public List<ParcelaCondicaoPagamento> listarTodos() {
         List<ParcelaCondicaoPagamento> parcelas = new ArrayList<>();
-        String sql = "SELECT * FROM parcela_condicao_pagamento";
+        String sql = "SELECT * FROM parcelas_condicao_pagamento";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -64,7 +64,7 @@ public class ParcelaCondicaoPagamentoDAO {
     }
 
     public ParcelaCondicaoPagamento buscarPorId(Long id) {
-        String sql = "SELECT * FROM parcela_condicao_pagamento WHERE id = ?";
+        String sql = "SELECT * FROM parcelas_condicao_pagamento WHERE id = ?";
         ParcelaCondicaoPagamento parcela = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -85,7 +85,7 @@ public class ParcelaCondicaoPagamentoDAO {
     }
 
     public void atualizar(ParcelaCondicaoPagamento parcela) {
-        String sql = "UPDATE parcela_condicao_pagamento SET numero_parcela = ?, dias = ?, percentual = ?, condicao_pagamento_id = ?, forma_pagamento_id = ?, data_vencimento = ?, situacao = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE parcelas_condicao_pagamento SET numero_parcela = ?, dias = ?, percentual = ?, condicao_pagamento_id = ?, forma_pagamento_id = ?, data_vencimento = ?, situacao = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -114,7 +114,7 @@ public class ParcelaCondicaoPagamentoDAO {
 
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM parcela_condicao_pagamento WHERE id = ?";
+        String sql = "DELETE FROM parcelas_condicao_pagamento WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -153,7 +153,7 @@ public class ParcelaCondicaoPagamentoDAO {
 
     public List<ParcelaCondicaoPagamento> buscarPorCondicaoPagamentoId(Long condicaoPagamentoId) {
         List<ParcelaCondicaoPagamento> parcelas = new ArrayList<>();
-        String sql = "SELECT * FROM parcela_condicao_pagamento WHERE condicao_pagamento_id = ?";
+        String sql = "SELECT * FROM parcelas_condicao_pagamento WHERE condicao_pagamento_id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

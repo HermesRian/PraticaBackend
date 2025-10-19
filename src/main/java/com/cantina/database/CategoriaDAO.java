@@ -9,7 +9,7 @@ import java.util.List;
 public class CategoriaDAO {
 
     public void salvar(Categoria categoria) {
-        String sql = "INSERT INTO categoria (nome, status, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO categorias (nome, status, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -26,7 +26,7 @@ public class CategoriaDAO {
 
     public List<Categoria> listarTodos() {
         List<Categoria> categorias = new ArrayList<>();
-        String sql = "SELECT * FROM categoria";
+        String sql = "SELECT * FROM categorias";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -51,7 +51,7 @@ public class CategoriaDAO {
     }
 
     public Categoria buscarPorId(Integer id) {
-        String sql = "SELECT * FROM categoria WHERE Id = ?";
+        String sql = "SELECT * FROM categorias WHERE Id = ?";
         Categoria categoria = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -77,7 +77,7 @@ public class CategoriaDAO {
     }
 
     public void atualizar(Categoria categoria) {
-        String sql = "UPDATE categoria SET nome = ?, status = ?, updated_at = NOW() WHERE Id = ?";
+        String sql = "UPDATE categorias SET nome = ?, status = ?, updated_at = NOW() WHERE Id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -94,7 +94,7 @@ public class CategoriaDAO {
     }
 
     public void excluir(Integer id) {
-        String sql = "DELETE FROM categoria WHERE Id = ?";
+        String sql = "DELETE FROM categorias WHERE Id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

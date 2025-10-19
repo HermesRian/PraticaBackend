@@ -9,7 +9,7 @@ import java.util.List;
 public class UnidadeMedidaDAO {
 
     public void salvar(UnidadeMedida unidadeMedida) {
-        String sql = "INSERT INTO unidade_medida (nome, status, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO unidades_medida (nome, status, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -26,7 +26,7 @@ public class UnidadeMedidaDAO {
 
     public List<UnidadeMedida> listarTodos() {
         List<UnidadeMedida> unidadesMedida = new ArrayList<>();
-        String sql = "SELECT * FROM unidade_medida";
+        String sql = "SELECT * FROM unidades_medida";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -51,7 +51,7 @@ public class UnidadeMedidaDAO {
     }
 
     public UnidadeMedida buscarPorId(Long id) {
-        String sql = "SELECT * FROM unidade_medida WHERE id = ?";
+        String sql = "SELECT * FROM unidades_medida WHERE id = ?";
         UnidadeMedida unidadeMedida = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -77,7 +77,7 @@ public class UnidadeMedidaDAO {
     }
 
     public void atualizar(UnidadeMedida unidadeMedida) {
-        String sql = "UPDATE unidade_medida SET nome = ?, status = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE unidades_medida SET nome = ?, status = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -94,7 +94,7 @@ public class UnidadeMedidaDAO {
     }
 
     public void excluir(Long id) {
-        String sql = "DELETE FROM unidade_medida WHERE id = ?";
+        String sql = "DELETE FROM unidades_medida WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
