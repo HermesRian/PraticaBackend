@@ -174,7 +174,7 @@ public class ParcelaCondicaoPagamentoDAO {
     }
 
     private FormaPagamento buscarFormaPagamentoPorId(Long id) {
-        String sql = "SELECT * FROM forma_pagamento WHERE id = ?";
+        String sql = "SELECT * FROM formas_pagamento WHERE id = ?";
         FormaPagamento formaPagamento = null;
 
         try (Connection connection = DatabaseConnection.getConnection();
