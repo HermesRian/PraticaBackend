@@ -1,6 +1,7 @@
 package com.cantina.database;
 
 import com.cantina.entities.Produto;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.sql.*;
 
+@Repository
 public class ProdutoDAO {
 
     public void salvar(Produto produto) {
@@ -157,6 +159,22 @@ public class ProdutoDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void atualizarEstoque(Long id, Integer novaQuantidade) {
+        String sql = "UPDATE produtos SET quantidade_estoque = ?, updated_at = NOW() WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, novaQuantidade);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao atualizar estoque do produto: " + e.getMessage(), e);
         }
     }
 }

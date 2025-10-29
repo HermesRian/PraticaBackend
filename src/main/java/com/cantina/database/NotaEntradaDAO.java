@@ -274,7 +274,7 @@ public class NotaEntradaDAO {
 
     private void calcularValores(NotaEntrada notaEntrada) {
         BigDecimal valorProdutos = BigDecimal.ZERO;
-        BigDecimal valorDescontoTotal = BigDecimal.ZERO;
+        BigDecimal valorDescontoItens = BigDecimal.ZERO;
 
         if (notaEntrada.getItens() != null && !notaEntrada.getItens().isEmpty()) {
             for (ItemNotaEntrada item : notaEntrada.getItens()) {
@@ -285,11 +285,17 @@ public class NotaEntradaDAO {
                 valorProdutos = valorProdutos.add(valorBrutoItem);
 
                 BigDecimal descontoItem = item.getValorDesconto() != null ? item.getValorDesconto() : BigDecimal.ZERO;
-                valorDescontoTotal = valorDescontoTotal.add(descontoItem);
+                valorDescontoItens = valorDescontoItens.add(descontoItem);
             }
         }
 
         notaEntrada.setValorProdutos(valorProdutos);
+
+        // Considera desconto dos itens + desconto geral da nota (se houver)
+        BigDecimal descontoNota = notaEntrada.getValorDesconto() != null ? notaEntrada.getValorDesconto() : BigDecimal.ZERO;
+        BigDecimal valorDescontoTotal = valorDescontoItens.add(descontoNota);
+
+        // Atualiza o desconto total na nota (itens + nota)
         notaEntrada.setValorDesconto(valorDescontoTotal);
 
         BigDecimal valorTotal = valorProdutos;

@@ -11,4 +11,6 @@ public interface NotaEntradaService {
     NotaEntrada atualizar(NotaEntrada notaEntrada);
     void excluir(Long id);
     void atualizarStatus(Long id, String novoStatus);
+    void confirmarNota(Long id);
+    void cancelarNota(Long id);
 }

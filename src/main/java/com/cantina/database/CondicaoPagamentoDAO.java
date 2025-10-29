@@ -1,6 +1,7 @@
 package com.cantina.database;
 
 import com.cantina.entities.CondicaoPagamento;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +12,7 @@ import java.util.List;
 import com.cantina.entities.ParcelaCondicaoPagamento;
 import com.cantina.database.ParcelaCondicaoPagamentoDAO;
 
-
+@Repository
 public class CondicaoPagamentoDAO {
 
     public void salvar(CondicaoPagamento condicaoPagamento) {
