@@ -1,6 +1,7 @@
 package com.cantina.database;
 
 import com.cantina.entities.ContaPagar;
+import com.cantina.entities.FormaPagamento;
 import com.cantina.entities.Fornecedor;
 import com.cantina.entities.NotaEntrada;
 import com.cantina.enums.StatusContaPagar;
@@ -295,6 +296,22 @@ public class ContaPagarDAO {
         conta.setJustificativaCancelamento(resultSet.getString("justificativa_cancelamento"));
         conta.setDataCriacao(resultSet.getTimestamp("created_at"));
         conta.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+
+        // Carregar objetos relacionados
+        if (conta.getFornecedorId() != null) {
+            FornecedorDAO fornecedorDAO = new FornecedorDAO();
+            conta.setFornecedor(fornecedorDAO.buscarPorId(conta.getFornecedorId()));
+        }
+
+        if (conta.getFormaPagamentoId() != null) {
+            FormaPagamentoDAO formaPagamentoDAO = new FormaPagamentoDAO();
+            conta.setFormaPagamento(formaPagamentoDAO.buscarPorId(conta.getFormaPagamentoId()));
+        }
+
+        if (conta.getNotaEntradaId() != null) {
+            NotaEntradaDAO notaEntradaDAO = new NotaEntradaDAO();
+            conta.setNotaEntrada(notaEntradaDAO.buscarPorId(conta.getNotaEntradaId()));
+        }
 
         return conta;
     }
