@@ -80,19 +80,15 @@ public class ContaPagarServiceImpl implements ContaPagarService {
             throw new RuntimeException("Conta está cancelada");
         }
 
-        // Verifica se é a primeira parcela paga desta nota (para atualizar estoque)
         boolean isPrimeiraParcela = conta.getNotaEntradaId() != null &&
                 contaPagarDAO.verificarPrimeiraContaPagaDaNota(conta.getNotaEntradaId());
 
-        // Marca a conta como PAGA
         contaPagarDAO.marcarComoPaga(id, new Date());
 
-        // Se for a primeira parcela paga, atualiza o estoque
         if (isPrimeiraParcela) {
             atualizarEstoque(conta.getNotaEntradaId());
         }
 
-        // Verifica se todas as parcelas foram pagas para atualizar o status da nota
         if (conta.getNotaEntradaId() != null) {
             verificarEAtualizarStatusNota(conta.getNotaEntradaId());
         }
@@ -110,22 +106,15 @@ public class ContaPagarServiceImpl implements ContaPagarService {
             throw new RuntimeException("Não é possível cancelar uma conta já paga");
         }
 
-        // Se a conta estiver vinculada a uma nota de entrada
-        if (conta.getNotaEntradaId() != null) {
-            NotaEntrada nota = notaEntradaDAO.buscarPorId(conta.getNotaEntradaId());
-
-            if (nota != null && StatusNotaEntrada.CONFIRMADA.name().equals(nota.getStatus())) {
-                // Cancela todas as parcelas e a nota
-                contaPagarDAO.cancelarTodasPorNotaEntrada(conta.getNotaEntradaId(), "Cancelamento em cascata");
-                notaEntradaDAO.atualizarStatus(conta.getNotaEntradaId(), StatusNotaEntrada.CANCELADA.name());
-            } else {
-                // Se a nota não estiver CONFIRMADA, apenas cancela esta conta
-                contaPagarDAO.cancelar(id, new Date(), null);
-            }
-        } else {
-            // Conta avulsa (sem nota vinculada), apenas cancela
-            contaPagarDAO.cancelar(id, new Date(), null);
+        if (conta.getStatus() == StatusContaPagar.CANCELADA) {
+            throw new RuntimeException("Conta já está cancelada");
         }
+
+        if (conta.getNotaEntradaId() != null) {
+            throw new RuntimeException("Contas vinculadas a notas de entrada devem ser canceladas através da nota. Use o endpoint PATCH /notas-entrada/" + conta.getNotaEntradaId() + "/cancelar");
+        }
+
+        contaPagarDAO.cancelar(id, new Date(), null);
     }
 
     @Override
@@ -133,9 +122,7 @@ public class ContaPagarServiceImpl implements ContaPagarService {
         contaPagarDAO.cancelarTodasPorNotaEntrada(notaEntradaId, "Cancelamento da nota de entrada");
     }
 
-    /**
-     * Atualiza o estoque dos produtos da nota de entrada (quando a primeira parcela é paga)
-     */
+
     private void atualizarEstoque(Long notaEntradaId) {
         NotaEntrada nota = notaEntradaDAO.buscarPorId(notaEntradaId);
 
@@ -150,7 +137,6 @@ public class ContaPagarServiceImpl implements ContaPagarService {
                 if (produto != null) {
                     Integer quantidadeAtual = produto.getQuantidadeEstoque() != null ?
                         produto.getQuantidadeEstoque() : 0;
-                    // Converte BigDecimal para Integer (arredonda para baixo)
                     Integer quantidadeAdicionar = item.getQuantidade() != null ?
                         item.getQuantidade().intValue() : 0;
                     Integer novaQuantidade = quantidadeAtual + quantidadeAdicionar;
@@ -161,9 +147,6 @@ public class ContaPagarServiceImpl implements ContaPagarService {
         }
     }
 
-    /**
-     * Verifica se todas as parcelas foram pagas e atualiza o status da nota para PAGA
-     */
     private void verificarEAtualizarStatusNota(Long notaEntradaId) {
         List<ContaPagar> todasContas = contaPagarDAO.buscarPorNotaEntradaId(notaEntradaId);
 
@@ -171,7 +154,6 @@ public class ContaPagarServiceImpl implements ContaPagarService {
             return;
         }
 
-        // Verifica se todas as contas estão pagas
         boolean todasPagas = todasContas.stream()
                 .allMatch(conta -> conta.getStatus() == StatusContaPagar.PAGA);
 

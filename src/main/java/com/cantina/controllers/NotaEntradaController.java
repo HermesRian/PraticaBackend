@@ -120,24 +120,8 @@ public class NotaEntradaController {
         notaEntradaService.excluir(id);
     }
 
-    @PatchMapping("/{id}/confirmar")
-    @Operation(summary = "Confirmar nota de entrada", description = "Confirma uma nota PENDENTE e gera as contas a pagar baseadas na condição de pagamento")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Nota confirmada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Nota não pode ser confirmada (status inválido ou sem condição de pagamento)"),
-            @ApiResponse(responseCode = "404", description = "Nota de entrada não encontrada")
-    })
-    public ResponseEntity<?> confirmarNota(@Parameter(description = "ID da nota de entrada") @PathVariable Long id) {
-        try {
-            notaEntradaService.confirmarNota(id);
-            return ResponseEntity.ok(Map.of("mensagem", "Nota confirmada com sucesso e contas a pagar geradas"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(Map.of("erro", e.getMessage()));
-        }
-    }
-
     @PatchMapping("/{id}/cancelar")
-    @Operation(summary = "Cancelar nota de entrada", description = "Cancela uma nota PENDENTE. Notas CONFIRMADAS devem ser canceladas pela conta a pagar")
+    @Operation(summary = "Cancelar nota de entrada", description = "Cancela uma nota de entrada e todas as suas contas a pagar pendentes")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Nota cancelada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Nota não pode ser cancelada (status inválido)"),

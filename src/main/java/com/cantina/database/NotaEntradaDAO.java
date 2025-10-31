@@ -291,11 +291,9 @@ public class NotaEntradaDAO {
 
         notaEntrada.setValorProdutos(valorProdutos);
 
-        // Considera desconto dos itens + desconto geral da nota (se houver)
         BigDecimal descontoNota = notaEntrada.getValorDesconto() != null ? notaEntrada.getValorDesconto() : BigDecimal.ZERO;
         BigDecimal valorDescontoTotal = valorDescontoItens.add(descontoNota);
 
-        // Atualiza o desconto total na nota (itens + nota)
         notaEntrada.setValorDesconto(valorDescontoTotal);
 
         BigDecimal valorTotal = valorProdutos;

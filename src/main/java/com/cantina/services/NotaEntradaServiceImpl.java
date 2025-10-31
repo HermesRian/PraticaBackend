@@ -34,6 +34,19 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
     @Override
     public NotaEntrada salvar(NotaEntrada notaEntrada) {
         notaEntradaDAO.salvar(notaEntrada);
+
+        if (notaEntrada.getCondicaoPagamentoId() != null) {
+            CondicaoPagamento condicaoPagamento = condicaoPagamentoDAO.buscarPorId(notaEntrada.getCondicaoPagamentoId());
+
+            if (condicaoPagamento != null &&
+                condicaoPagamento.getParcelasCondicao() != null &&
+                !condicaoPagamento.getParcelasCondicao().isEmpty()) {
+
+                List<ContaPagar> contasAPagar = gerarContasPagar(notaEntrada, condicaoPagamento);
+                contaPagarDAO.salvarLista(contasAPagar);
+            }
+        }
+
         return notaEntrada;
     }
 
@@ -59,50 +72,14 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
     }
 
     @Override
-    public void excluir(Long id) {
+    public void excluir(Long id)
+    {
         notaEntradaDAO.excluir(id);
     }
 
     @Override
     public void atualizarStatus(Long id, String novoStatus) {
         notaEntradaDAO.atualizarStatus(id, novoStatus);
-    }
-
-    @Override
-    public void confirmarNota(Long id) {
-        NotaEntrada nota = notaEntradaDAO.buscarPorId(id);
-
-        if (nota == null) {
-            throw new RuntimeException("Nota de entrada não encontrada");
-        }
-
-        if (!StatusNotaEntrada.PENDENTE.name().equals(nota.getStatus())) {
-            throw new RuntimeException("Apenas notas com status PENDENTE podem ser confirmadas");
-        }
-
-        if (nota.getCondicaoPagamentoId() == null) {
-            throw new RuntimeException("Nota de entrada não possui condição de pagamento definida");
-        }
-
-        // Busca a condição de pagamento com suas parcelas
-        CondicaoPagamento condicaoPagamento = condicaoPagamentoDAO.buscarPorId(nota.getCondicaoPagamentoId());
-
-        if (condicaoPagamento == null) {
-            throw new RuntimeException("Condição de pagamento não encontrada");
-        }
-
-        if (condicaoPagamento.getParcelasCondicao() == null || condicaoPagamento.getParcelasCondicao().isEmpty()) {
-            throw new RuntimeException("Condição de pagamento não possui parcelas configuradas");
-        }
-
-        // Gera as contas a pagar baseadas nas parcelas da condição de pagamento
-        List<ContaPagar> contasAPagar = gerarContasPagar(nota, condicaoPagamento);
-
-        // Salva as contas a pagar
-        contaPagarDAO.salvarLista(contasAPagar);
-
-        // Atualiza o status da nota para CONFIRMADA
-        notaEntradaDAO.atualizarStatus(id, StatusNotaEntrada.CONFIRMADA.name());
     }
 
     @Override
@@ -113,18 +90,20 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             throw new RuntimeException("Nota de entrada não encontrada");
         }
 
-        if (StatusNotaEntrada.PENDENTE.name().equals(nota.getStatus())) {
-            // Se a nota está PENDENTE, apenas cancela
-            notaEntradaDAO.atualizarStatus(id, StatusNotaEntrada.CANCELADA.name());
-        } else {
-            throw new RuntimeException("Apenas notas PENDENTE podem ser canceladas diretamente. " +
-                    "Para notas CONFIRMADAS, cancele pela conta a pagar");
+        if (StatusNotaEntrada.CANCELADA.name().equals(nota.getStatus())) {
+            throw new RuntimeException("Esta nota já está cancelada");
         }
+
+        if (StatusNotaEntrada.PAGA.name().equals(nota.getStatus())) {
+            throw new RuntimeException("Não é possível cancelar uma nota que já foi paga");
+        }
+
+        contaPagarDAO.cancelarTodasPorNotaEntrada(id, "Nota de entrada cancelada");
+
+        notaEntradaDAO.atualizarStatus(id, StatusNotaEntrada.CANCELADA.name());
     }
 
-    /**
-     * Gera as contas a pagar baseadas nas parcelas da condição de pagamento
-     */
+
     private List<ContaPagar> gerarContasPagar(NotaEntrada nota, CondicaoPagamento condicaoPagamento) {
         List<ContaPagar> contas = new ArrayList<>();
         List<ParcelaCondicaoPagamento> parcelas = condicaoPagamento.getParcelasCondicao();
@@ -134,13 +113,11 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
         for (ParcelaCondicaoPagamento parcela : parcelas) {
             ContaPagar conta = new ContaPagar();
 
-            // Dados da conta
             conta.setNumero(nota.getNumero());
             conta.setModelo(nota.getModelo());
             conta.setSerie(nota.getSerie());
             conta.setParcela(parcela.getNumeroParcela());
 
-            // Valores
             BigDecimal percentual = BigDecimal.valueOf(parcela.getPercentual()).divide(BigDecimal.valueOf(100));
             BigDecimal valorParcela = valorTotalNota.multiply(percentual).setScale(2, RoundingMode.HALF_UP);
             conta.setValor(valorParcela);
@@ -149,12 +126,10 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             conta.setJuro(BigDecimal.ZERO);
             conta.setValorBaixa(null);
 
-            // Relacionamentos (FKs)
             conta.setFornecedorId(nota.getFornecedorId());
             conta.setFormaPagamentoId(parcela.getFormaPagamento() != null ? parcela.getFormaPagamento().getId() : null);
             conta.setNotaEntradaId(nota.getId());
 
-            // Datas
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(nota.getDataEmissao() != null ? nota.getDataEmissao() : new Date());
             calendar.add(Calendar.DAY_OF_MONTH, parcela.getDias());
@@ -164,10 +139,8 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             conta.setDataPagamento(null);
             conta.setDataCancelamento(null);
 
-            // Status
             conta.setStatus(StatusContaPagar.PENDENTE);
 
-            // Descrições
             conta.setDescricao("Parcela " + parcela.getNumeroParcela() + " referente à nota " + nota.getNumero());
             conta.setJustificativaCancelamento(null);
 

@@ -297,7 +297,6 @@ public class ContaPagarDAO {
         conta.setDataCriacao(resultSet.getTimestamp("created_at"));
         conta.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
 
-        // Carregar objetos relacionados
         if (conta.getFornecedorId() != null) {
             FornecedorDAO fornecedorDAO = new FornecedorDAO();
             conta.setFornecedor(fornecedorDAO.buscarPorId(conta.getFornecedorId()));

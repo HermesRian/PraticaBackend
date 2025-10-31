@@ -2,7 +2,6 @@ package com.cantina.enums;
 
 public enum StatusNotaEntrada {
     PENDENTE("Pendente"),
-    CONFIRMADA("Confirmada"),
     PAGA("Paga"),
     CANCELADA("Cancelada");
 
