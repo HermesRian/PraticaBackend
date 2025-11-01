@@ -186,7 +186,10 @@ public class ParcelaCondicaoPagamentoDAO {
             if (resultSet.next()) {
                 formaPagamento = new FormaPagamento();
                 formaPagamento.setId(resultSet.getLong("id"));
+                formaPagamento.setNome(resultSet.getString("nome"));
                 formaPagamento.setAtivo(resultSet.getBoolean("status"));
+                formaPagamento.setDataCriacao(resultSet.getDate("created_at"));
+                formaPagamento.setUltimaModificacao(resultSet.getDate("updated_at"));
             }
 
         } catch (SQLException e) {
