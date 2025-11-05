@@ -141,7 +141,6 @@ public class CondicaoPagamentoDAO {
                     statementInserirParcela.setDouble(3, parcela.getPercentual());
                     statementInserirParcela.setLong(4, condicaoPagamento.getId());
 
-                    // Tenta usar formaPagamentoId diretamente, se não existir, busca do objeto
                     Long formaPagamentoId = parcela.getFormaPagamentoId();
                     if (formaPagamentoId == null && parcela.getFormaPagamento() != null) {
                         formaPagamentoId = parcela.getFormaPagamento().getId();
