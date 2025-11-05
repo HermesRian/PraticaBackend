@@ -112,8 +112,8 @@ public class CondicaoPagamentoDAO {
 
     public void atualizar(CondicaoPagamento condicaoPagamento) {
         String sqlCondicao = "UPDATE condicoes_pagamento SET nome = ?, dias = ?, parcelas = ?, status = ?, juros_percentual = ?, multa_percentual = ?, desconto_percentual = ?, updated_at = NOW() WHERE id = ?";
-        String sqlExcluirParcelas = "DELETE FROM parcelas_condicoes_pagamento WHERE condicoes_pagamento_id = ?";
-        String sqlInserirParcela = "INSERT INTO parcelas_condicoes_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id) VALUES (?, ?, ?, ?, ?)";
+        String sqlExcluirParcelas = "DELETE FROM parcelas_condicao_pagamento WHERE condicao_pagamento_id = ?";
+        String sqlInserirParcela = "INSERT INTO parcelas_condicao_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection()) {
             connection.setAutoCommit(false);
@@ -140,7 +140,18 @@ public class CondicaoPagamentoDAO {
                     statementInserirParcela.setInt(2, parcela.getDias());
                     statementInserirParcela.setDouble(3, parcela.getPercentual());
                     statementInserirParcela.setLong(4, condicaoPagamento.getId());
-                    statementInserirParcela.setLong(5, parcela.getFormaPagamento().getId());
+
+                    // Tenta usar formaPagamentoId diretamente, se não existir, busca do objeto
+                    Long formaPagamentoId = parcela.getFormaPagamentoId();
+                    if (formaPagamentoId == null && parcela.getFormaPagamento() != null) {
+                        formaPagamentoId = parcela.getFormaPagamento().getId();
+                    }
+
+                    if (formaPagamentoId == null) {
+                        throw new RuntimeException("FormaPagamentoId é obrigatório para a parcela " + parcela.getNumeroParcela());
+                    }
+
+                    statementInserirParcela.setLong(5, formaPagamentoId);
                     statementInserirParcela.executeUpdate();
                 }
 
