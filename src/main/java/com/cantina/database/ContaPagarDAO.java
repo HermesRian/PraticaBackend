@@ -74,7 +74,7 @@ public class ContaPagarDAO {
 
     public List<ContaPagar> listarTodas() {
         List<ContaPagar> contas = new ArrayList<>();
-        String sql = "SELECT * FROM contas_pagar WHERE data_cancelamento IS NULL ORDER BY data_vencimento ASC";
+        String sql = "SELECT * FROM contas_pagar ORDER BY data_vencimento ASC";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
