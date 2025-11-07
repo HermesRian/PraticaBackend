@@ -98,8 +98,19 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             throw new RuntimeException("Não é possível cancelar uma nota que já foi paga");
         }
 
+        // Verifica se alguma parcela já foi paga
+        List<ContaPagar> contas = contaPagarDAO.buscarPorNotaEntradaId(id);
+        boolean algumaParcelajaPaga = contas.stream()
+                .anyMatch(conta -> conta.getStatus() == StatusContaPagar.PAGA);
+
+        if (algumaParcelajaPaga) {
+            throw new RuntimeException("Não é possível cancelar a nota porque uma ou mais parcelas já foram pagas");
+        }
+
+        // Cancela todas as contas a pagar desta nota que ainda não foram pagas
         contaPagarDAO.cancelarTodasPorNotaEntrada(id, "Nota de entrada cancelada");
 
+        // Atualiza o status da nota para CANCELADA
         notaEntradaDAO.atualizarStatus(id, StatusNotaEntrada.CANCELADA.name());
     }
 
