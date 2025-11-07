@@ -177,4 +177,20 @@ public class ProdutoDAO {
             throw new RuntimeException("Erro ao atualizar estoque do produto: " + e.getMessage(), e);
         }
     }
+
+    public void atualizarValorCompra(Long id, BigDecimal valorCompra) {
+        String sql = "UPDATE produtos SET valor_compra = ?, updated_at = NOW() WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setBigDecimal(1, valorCompra);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao atualizar valor de compra do produto: " + e.getMessage(), e);
+        }
+    }
 }

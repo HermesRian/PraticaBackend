@@ -325,4 +325,37 @@ public class NotaEntradaDAO {
         }
     }
 
+    /**
+     * Busca o valor unitário mais recente de um produto em notas não canceladas
+     * (excluindo a nota especificada em notaExcluirId)
+     */
+    public BigDecimal buscarValorUnitarioMaisRecenteProduto(Long produtoId, Long notaExcluirId) {
+        String sql = "SELECT ine.valor_unitario " +
+                     "FROM itens_nota_entrada ine " +
+                     "INNER JOIN notas_entrada ne ON ine.nota_entrada_id = ne.id " +
+                     "WHERE ine.produto_id = ? " +
+                     "AND ne.id != ? " +
+                     "AND ne.status != 'CANCELADA' " +
+                     "AND ne.ativo = true " +
+                     "ORDER BY ne.created_at DESC " +
+                     "LIMIT 1";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, produtoId);
+            statement.setLong(2, notaExcluirId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getBigDecimal("valor_unitario");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null; // Não há nota anterior para este produto
+    }
+
 }

@@ -3,10 +3,8 @@ package com.cantina.services;
 import com.cantina.database.CondicaoPagamentoDAO;
 import com.cantina.database.ContaPagarDAO;
 import com.cantina.database.NotaEntradaDAO;
-import com.cantina.entities.CondicaoPagamento;
-import com.cantina.entities.ContaPagar;
-import com.cantina.entities.NotaEntrada;
-import com.cantina.entities.ParcelaCondicaoPagamento;
+import com.cantina.database.ProdutoDAO;
+import com.cantina.entities.*;
 import com.cantina.enums.StatusContaPagar;
 import com.cantina.enums.StatusNotaEntrada;
 import org.springframework.stereotype.Service;
@@ -24,17 +22,24 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
     private final NotaEntradaDAO notaEntradaDAO;
     private final CondicaoPagamentoDAO condicaoPagamentoDAO;
     private final ContaPagarDAO contaPagarDAO;
+    private final ProdutoDAO produtoDAO;
 
-    public NotaEntradaServiceImpl(NotaEntradaDAO notaEntradaDAO, CondicaoPagamentoDAO condicaoPagamentoDAO, ContaPagarDAO contaPagarDAO) {
+    public NotaEntradaServiceImpl(NotaEntradaDAO notaEntradaDAO, CondicaoPagamentoDAO condicaoPagamentoDAO, ContaPagarDAO contaPagarDAO, ProdutoDAO produtoDAO) {
         this.notaEntradaDAO = notaEntradaDAO;
         this.condicaoPagamentoDAO = condicaoPagamentoDAO;
         this.contaPagarDAO = contaPagarDAO;
+        this.produtoDAO = produtoDAO;
     }
 
     @Override
     public NotaEntrada salvar(NotaEntrada notaEntrada) {
+        // Salva a nota de entrada
         notaEntradaDAO.salvar(notaEntrada);
 
+        // Atualiza estoque e valorCompra dos produtos
+        atualizarEstoqueEValorCompra(notaEntrada);
+
+        // Se a nota tiver condição de pagamento, gera as contas a pagar automaticamente
         if (notaEntrada.getCondicaoPagamentoId() != null) {
             CondicaoPagamento condicaoPagamento = condicaoPagamentoDAO.buscarPorId(notaEntrada.getCondicaoPagamentoId());
 
@@ -107,6 +112,9 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             throw new RuntimeException("Não é possível cancelar a nota porque uma ou mais parcelas já foram pagas");
         }
 
+        // Reverte estoque e valorCompra dos produtos
+        reverterEstoqueEValorCompra(nota);
+
         // Cancela todas as contas a pagar desta nota que ainda não foram pagas
         contaPagarDAO.cancelarTodasPorNotaEntrada(id, "Nota de entrada cancelada");
 
@@ -159,5 +167,60 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
         }
 
         return contas;
+    }
+
+    /**
+     * Atualiza o estoque e valor de compra dos produtos quando uma nota é criada
+     */
+    private void atualizarEstoqueEValorCompra(NotaEntrada nota) {
+        if (nota == null || nota.getItens() == null || nota.getItens().isEmpty()) {
+            return;
+        }
+
+        for (ItemNotaEntrada item : nota.getItens()) {
+            if (item.getProdutoId() != null) {
+                Produto produto = produtoDAO.buscarPorId(item.getProdutoId());
+
+                if (produto != null) {
+                    // Atualiza estoque
+                    Integer quantidadeAtual = produto.getQuantidadeEstoque() != null ? produto.getQuantidadeEstoque() : 0;
+                    Integer quantidadeAdicionar = item.getQuantidade() != null ? item.getQuantidade().intValue() : 0;
+                    Integer novaQuantidade = quantidadeAtual + quantidadeAdicionar;
+                    produtoDAO.atualizarEstoque(produto.getId(), novaQuantidade);
+
+                    // Atualiza valorCompra (sempre usa o valor da nota mais recente)
+                    if (item.getValorUnitario() != null) {
+                        produtoDAO.atualizarValorCompra(produto.getId(), item.getValorUnitario());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Reverte o estoque e valor de compra dos produtos quando uma nota é cancelada
+     */
+    private void reverterEstoqueEValorCompra(NotaEntrada nota) {
+        if (nota == null || nota.getItens() == null || nota.getItens().isEmpty()) {
+            return;
+        }
+
+        for (ItemNotaEntrada item : nota.getItens()) {
+            if (item.getProdutoId() != null) {
+                Produto produto = produtoDAO.buscarPorId(item.getProdutoId());
+
+                if (produto != null) {
+                    // Reverte estoque (subtrai a quantidade)
+                    Integer quantidadeAtual = produto.getQuantidadeEstoque() != null ? produto.getQuantidadeEstoque() : 0;
+                    Integer quantidadeRemover = item.getQuantidade() != null ? item.getQuantidade().intValue() : 0;
+                    Integer novaQuantidade = Math.max(0, quantidadeAtual - quantidadeRemover); // Não deixa ficar negativo
+                    produtoDAO.atualizarEstoque(produto.getId(), novaQuantidade);
+
+                    // Busca o valor unitário da nota mais recente deste produto (excluindo a nota cancelada)
+                    BigDecimal valorAnterior = notaEntradaDAO.buscarValorUnitarioMaisRecenteProduto(item.getProdutoId(), nota.getId());
+                    produtoDAO.atualizarValorCompra(produto.getId(), valorAnterior); // Se null, define como null
+                }
+            }
+        }
     }
 }

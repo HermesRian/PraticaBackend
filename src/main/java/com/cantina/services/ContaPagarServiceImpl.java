@@ -2,11 +2,7 @@ package com.cantina.services;
 
 import com.cantina.database.ContaPagarDAO;
 import com.cantina.database.NotaEntradaDAO;
-import com.cantina.database.ProdutoDAO;
 import com.cantina.entities.ContaPagar;
-import com.cantina.entities.ItemNotaEntrada;
-import com.cantina.entities.NotaEntrada;
-import com.cantina.entities.Produto;
 import com.cantina.enums.StatusContaPagar;
 import com.cantina.enums.StatusNotaEntrada;
 import org.springframework.stereotype.Service;
@@ -19,12 +15,10 @@ public class ContaPagarServiceImpl implements ContaPagarService {
 
     private final ContaPagarDAO contaPagarDAO;
     private final NotaEntradaDAO notaEntradaDAO;
-    private final ProdutoDAO produtoDAO;
 
-    public ContaPagarServiceImpl(ContaPagarDAO contaPagarDAO, NotaEntradaDAO notaEntradaDAO, ProdutoDAO produtoDAO) {
+    public ContaPagarServiceImpl(ContaPagarDAO contaPagarDAO, NotaEntradaDAO notaEntradaDAO) {
         this.contaPagarDAO = contaPagarDAO;
         this.notaEntradaDAO = notaEntradaDAO;
-        this.produtoDAO = produtoDAO;
     }
 
     @Override
@@ -80,15 +74,10 @@ public class ContaPagarServiceImpl implements ContaPagarService {
             throw new RuntimeException("Conta está cancelada");
         }
 
-        boolean isPrimeiraParcela = conta.getNotaEntradaId() != null &&
-                contaPagarDAO.verificarPrimeiraContaPagaDaNota(conta.getNotaEntradaId());
-
+        // Marca a conta como PAGA
         contaPagarDAO.marcarComoPaga(id, new Date());
 
-        if (isPrimeiraParcela) {
-            atualizarEstoque(conta.getNotaEntradaId());
-        }
-
+        // Verifica se todas as parcelas foram pagas para atualizar o status da nota
         if (conta.getNotaEntradaId() != null) {
             verificarEAtualizarStatusNota(conta.getNotaEntradaId());
         }
@@ -122,31 +111,9 @@ public class ContaPagarServiceImpl implements ContaPagarService {
         contaPagarDAO.cancelarTodasPorNotaEntrada(notaEntradaId, "Cancelamento da nota de entrada");
     }
 
-
-    private void atualizarEstoque(Long notaEntradaId) {
-        NotaEntrada nota = notaEntradaDAO.buscarPorId(notaEntradaId);
-
-        if (nota == null || nota.getItens() == null || nota.getItens().isEmpty()) {
-            return;
-        }
-
-        for (ItemNotaEntrada item : nota.getItens()) {
-            if (item.getProdutoId() != null) {
-                Produto produto = produtoDAO.buscarPorId(item.getProdutoId());
-
-                if (produto != null) {
-                    Integer quantidadeAtual = produto.getQuantidadeEstoque() != null ?
-                        produto.getQuantidadeEstoque() : 0;
-                    Integer quantidadeAdicionar = item.getQuantidade() != null ?
-                        item.getQuantidade().intValue() : 0;
-                    Integer novaQuantidade = quantidadeAtual + quantidadeAdicionar;
-
-                    produtoDAO.atualizarEstoque(produto.getId(), novaQuantidade);
-                }
-            }
-        }
-    }
-
+    /**
+     * Verifica se todas as parcelas foram pagas e atualiza o status da nota para PAGA
+     */
     private void verificarEAtualizarStatusNota(Long notaEntradaId) {
         List<ContaPagar> todasContas = contaPagarDAO.buscarPorNotaEntradaId(notaEntradaId);
 
