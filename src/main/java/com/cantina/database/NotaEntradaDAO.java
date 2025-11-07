@@ -330,10 +330,10 @@ public class NotaEntradaDAO {
      * (excluindo a nota especificada em notaExcluirId)
      */
     public BigDecimal buscarValorUnitarioMaisRecenteProduto(Long produtoId, Long notaExcluirId) {
-        String sql = "SELECT ine.valor_unitario " +
-                     "FROM itens_nota_entrada ine " +
-                     "INNER JOIN notas_entrada ne ON ine.nota_entrada_id = ne.id " +
-                     "WHERE ine.produto_id = ? " +
+        String sql = "SELECT pn.valor_unitario " +
+                     "FROM produtos_nota pn " +
+                     "INNER JOIN notas_entrada ne ON pn.nota_entrada_id = ne.id " +
+                     "WHERE pn.produto_id = ? " +
                      "AND ne.id != ? " +
                      "AND ne.status != 'CANCELADA' " +
                      "AND ne.ativo = true " +
