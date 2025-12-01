@@ -10,4 +10,5 @@ public class UnidadeMedida {
     private Boolean ativo;
     private Timestamp dataCriacao;
     private Timestamp ultimaModificacao;
+    private String observacao;
 }

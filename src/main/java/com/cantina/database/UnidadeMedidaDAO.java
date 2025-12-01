@@ -9,13 +9,14 @@ import java.util.List;
 public class UnidadeMedidaDAO {
 
     public void salvar(UnidadeMedida unidadeMedida) {
-        String sql = "INSERT INTO unidades_medida (nome, status, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO unidades_medida (nome, status, observacao, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, unidadeMedida.getNome());
             statement.setBoolean(2, unidadeMedida.getAtivo() != null ? unidadeMedida.getAtivo() : true);
+            statement.setString(3, unidadeMedida.getObservacao());
 
             statement.executeUpdate();
 
@@ -39,6 +40,7 @@ public class UnidadeMedidaDAO {
                 unidadeMedida.setAtivo(resultSet.getBoolean("status"));
                 unidadeMedida.setDataCriacao(resultSet.getTimestamp("created_at"));
                 unidadeMedida.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+                unidadeMedida.setObservacao(resultSet.getString("observacao"));
 
                 unidadesMedida.add(unidadeMedida);
             }
@@ -67,6 +69,7 @@ public class UnidadeMedidaDAO {
                 unidadeMedida.setAtivo(resultSet.getBoolean("status"));
                 unidadeMedida.setDataCriacao(resultSet.getTimestamp("created_at"));
                 unidadeMedida.setUltimaModificacao(resultSet.getTimestamp("updated_at"));
+                unidadeMedida.setObservacao(resultSet.getString("observacao"));
             }
 
         } catch (SQLException e) {
@@ -77,14 +80,15 @@ public class UnidadeMedidaDAO {
     }
 
     public void atualizar(UnidadeMedida unidadeMedida) {
-        String sql = "UPDATE unidades_medida SET nome = ?, status = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE unidades_medida SET nome = ?, status = ?, observacao = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, unidadeMedida.getNome());
             statement.setBoolean(2, unidadeMedida.getAtivo() != null ? unidadeMedida.getAtivo() : true);
-            statement.setLong(3, unidadeMedida.getId());
+            statement.setString(3, unidadeMedida.getObservacao());
+            statement.setLong(4, unidadeMedida.getId());
 
             statement.executeUpdate();
 

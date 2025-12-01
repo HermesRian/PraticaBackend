@@ -355,7 +355,7 @@ public class NotaEntradaDAO {
             e.printStackTrace();
         }
 
-        return null; // Não há nota anterior para este produto
+        return null;
     }
 
 }
