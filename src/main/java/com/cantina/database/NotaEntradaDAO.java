@@ -358,4 +358,37 @@ public class NotaEntradaDAO {
         return null;
     }
 
+    /**
+     * Busca a nota mais recente de um produto em notas não canceladas
+     * (excluindo a nota especificada em notaExcluirId)
+     */
+    public NotaEntrada buscarNotaMaisRecenteProduto(Long produtoId, Long notaExcluirId) {
+        String sql = "SELECT ne.* " +
+                     "FROM notas_entrada ne " +
+                     "INNER JOIN produtos_nota pn ON pn.nota_entrada_id = ne.id " +
+                     "WHERE pn.produto_id = ? " +
+                     "AND ne.id != ? " +
+                     "AND ne.status != 'CANCELADA' " +
+                     "AND ne.ativo = true " +
+                     "ORDER BY ne.created_at DESC " +
+                     "LIMIT 1";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, produtoId);
+            statement.setLong(2, notaExcluirId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return mapearNotaEntrada(resultSet);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }

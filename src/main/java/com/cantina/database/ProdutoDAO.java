@@ -16,7 +16,7 @@ import java.sql.*;
 public class ProdutoDAO {
 
     public void salvar(Produto produto) {
-        String sql = "INSERT INTO produtos (nome, quantidade_estoque, descricao, codigo, status, marca_id, unidade_medida_id, valor_compra, valor_venda, quantidade_minima, percentual_lucro, observacao, created_at, updated_at, referencia, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)";
+        String sql = "INSERT INTO produtos (nome, quantidade_estoque, descricao, codigo, status, marca_id, unidade_medida_id, valor_compra, custo_produto, valor_venda, quantidade_minima, percentual_lucro, observacao, created_at, updated_at, referencia, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -29,12 +29,13 @@ public class ProdutoDAO {
             statement.setObject(6, produto.getMarcaId());
             statement.setObject(7, produto.getUnidadeMedidaId());
             statement.setObject(8, produto.getValorCompra());
-            statement.setObject(9, produto.getValorVenda());
-            statement.setObject(10, produto.getQuantidadeMinima());
-            statement.setObject(11, produto.getPercentualLucro());
-            statement.setString(12, produto.getObservacao());
-            statement.setString(13, produto.getReferencia());
-            statement.setObject(14, produto.getCategoriaId());
+            statement.setObject(9, produto.getCustoProduto());
+            statement.setObject(10, produto.getValorVenda());
+            statement.setObject(11, produto.getQuantidadeMinima());
+            statement.setObject(12, produto.getPercentualLucro());
+            statement.setString(13, produto.getObservacao());
+            statement.setString(14, produto.getReferencia());
+            statement.setObject(15, produto.getCategoriaId());
 
             statement.executeUpdate();
 
@@ -64,6 +65,7 @@ public class ProdutoDAO {
                 produto.setMarcaId((Long) resultSet.getObject("marca_id"));
                 produto.setUnidadeMedidaId((Long) resultSet.getObject("unidade_medida_id"));
                 produto.setValorCompra(resultSet.getBigDecimal("valor_compra"));
+                produto.setCustoProduto(resultSet.getBigDecimal("custo_produto"));
                 produto.setValorVenda(resultSet.getBigDecimal("valor_venda"));
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
@@ -104,6 +106,7 @@ public class ProdutoDAO {
                 produto.setMarcaId((Long) resultSet.getObject("marca_id"));
                 produto.setUnidadeMedidaId((Long) resultSet.getObject("unidade_medida_id"));
                 produto.setValorCompra(resultSet.getBigDecimal("valor_compra"));
+                produto.setCustoProduto(resultSet.getBigDecimal("custo_produto"));
                 produto.setValorVenda(resultSet.getBigDecimal("valor_venda"));
                 produto.setQuantidadeMinima((Integer) resultSet.getObject("quantidade_minima"));
                 produto.setPercentualLucro(resultSet.getBigDecimal("percentual_lucro"));
@@ -120,7 +123,7 @@ public class ProdutoDAO {
     }
 
     public void atualizar(Produto produto) {
-        String sql = "UPDATE produtos SET nome = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, status = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacao = ?, updated_at = NOW(), referencia = ?, categoria_id = ? WHERE id = ?";
+        String sql = "UPDATE produtos SET nome = ?, quantidade_estoque = ?, descricao = ?, codigo = ?, status = ?, marca_id = ?, unidade_medida_id = ?, valor_compra = ?, custo_produto = ?, valor_venda = ?, quantidade_minima = ?, percentual_lucro = ?, observacao = ?, updated_at = NOW(), referencia = ?, categoria_id = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -133,13 +136,14 @@ public class ProdutoDAO {
             statement.setObject(6, produto.getMarcaId());
             statement.setObject(7, produto.getUnidadeMedidaId());
             statement.setObject(8, produto.getValorCompra());
-            statement.setObject(9, produto.getValorVenda());
-            statement.setObject(10, produto.getQuantidadeMinima());
-            statement.setObject(11, produto.getPercentualLucro());
-            statement.setString(12, produto.getObservacao());
-            statement.setString(13, produto.getReferencia());
-            statement.setObject(14, produto.getCategoriaId());
-            statement.setLong(15, produto.getId());
+            statement.setObject(9, produto.getCustoProduto());
+            statement.setObject(10, produto.getValorVenda());
+            statement.setObject(11, produto.getQuantidadeMinima());
+            statement.setObject(12, produto.getPercentualLucro());
+            statement.setString(13, produto.getObservacao());
+            statement.setString(14, produto.getReferencia());
+            statement.setObject(15, produto.getCategoriaId());
+            statement.setLong(16, produto.getId());
 
             statement.executeUpdate();
 
@@ -191,6 +195,22 @@ public class ProdutoDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao atualizar valor de compra do produto: " + e.getMessage(), e);
+        }
+    }
+
+    public void atualizarCustoProduto(Long id, BigDecimal custoProduto) {
+        String sql = "UPDATE produtos SET custo_produto = ?, updated_at = NOW() WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setBigDecimal(1, custoProduto);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao atualizar custo do produto: " + e.getMessage(), e);
         }
     }
 }
