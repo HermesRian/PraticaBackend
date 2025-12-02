@@ -198,6 +198,22 @@ public class ProdutoDAO {
         }
     }
 
+    public void atualizarValorVenda(Long id, BigDecimal valorVenda) {
+        String sql = "UPDATE produtos SET valor_venda = ?, updated_at = NOW() WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setBigDecimal(1, valorVenda);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao atualizar valor de venda do produto: " + e.getMessage(), e);
+        }
+    }
+
     public void atualizarCustoProduto(Long id, BigDecimal custoProduto) {
         String sql = "UPDATE produtos SET custo_produto = ?, updated_at = NOW() WHERE id = ?";
 

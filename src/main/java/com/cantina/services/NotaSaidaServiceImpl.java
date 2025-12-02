@@ -100,6 +100,10 @@ public class NotaSaidaServiceImpl implements NotaSaidaService {
 
                     Integer novaQuantidade = quantidadeAtual - quantidadeRemover;
                     produtoDAO.atualizarEstoque(produto.getId(), novaQuantidade);
+
+                    if (item.getValorUnitario() != null) {
+                        produtoDAO.atualizarValorVenda(produto.getId(), item.getValorUnitario());
+                    }
                 }
             }
         }
