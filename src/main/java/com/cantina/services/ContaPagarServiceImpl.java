@@ -84,16 +84,12 @@ public class ContaPagarServiceImpl implements ContaPagarService {
 
         Date dataPagamento = new Date();
 
-        // Calcula juros, multa e desconto automaticamente
         calcularJurosMultaDesconto(conta, dataPagamento);
 
-        // Atualiza a conta com os valores calculados
         contaPagarDAO.atualizar(conta);
 
-        // Marca a conta como PAGA
         contaPagarDAO.marcarComoPaga(id, dataPagamento);
 
-        // Verifica se todas as parcelas foram pagas para atualizar o status da nota
         if (conta.getNotaEntradaId() != null) {
             verificarEAtualizarStatusNota(conta.getNotaEntradaId());
         }
@@ -131,18 +127,15 @@ public class ContaPagarServiceImpl implements ContaPagarService {
      * Calcula juros, multa e desconto baseado na data de pagamento e condição de pagamento
      */
     private void calcularJurosMultaDesconto(ContaPagar conta, Date dataPagamento) {
-        // Valor original da conta
         BigDecimal valorOriginal = conta.getValor();
 
         if (valorOriginal == null || valorOriginal.compareTo(BigDecimal.ZERO) == 0) {
             throw new RuntimeException("Conta não possui valor definido");
         }
 
-        // Busca a condição de pagamento através da nota de entrada
         CondicaoPagamento condicaoPagamento = buscarCondicaoPagamento(conta);
 
         if (condicaoPagamento == null) {
-            // Se não houver condição de pagamento, apenas define o valor de baixa como valor original
             conta.setDesconto(BigDecimal.ZERO);
             conta.setMulta(BigDecimal.ZERO);
             conta.setJuro(BigDecimal.ZERO);
@@ -150,7 +143,6 @@ public class ContaPagarServiceImpl implements ContaPagarService {
             return;
         }
 
-        // Calcula a diferença de dias entre a data de vencimento e a data de pagamento
         long diffInMillies = dataPagamento.getTime() - conta.getDataVencimento().getTime();
         long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillies);
 
@@ -159,18 +151,14 @@ public class ContaPagarServiceImpl implements ContaPagarService {
         BigDecimal desconto = BigDecimal.ZERO;
 
         if (diffInDays > 0) {
-            // PAGAMENTO ATRASADO - Aplica multa e juros
 
-            // Multa (aplica uma vez sobre o valor original)
             if (condicaoPagamento.getMultaPercentual() != null && condicaoPagamento.getMultaPercentual() > 0) {
                 multa = valorOriginal
                     .multiply(BigDecimal.valueOf(condicaoPagamento.getMultaPercentual()))
                     .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             }
 
-            // Juros simples (por mês de atraso)
             if (condicaoPagamento.getJurosPercentual() != null && condicaoPagamento.getJurosPercentual() > 0) {
-                // Calcula quantos meses de atraso (considera fração de mês)
                 double mesesAtraso = diffInDays / 30.0;
 
                 juro = valorOriginal
@@ -181,7 +169,6 @@ public class ContaPagarServiceImpl implements ContaPagarService {
             }
 
         } else if (diffInDays < 0) {
-            // PAGAMENTO ANTECIPADO - Aplica desconto
 
             if (condicaoPagamento.getDescontoPercentual() != null && condicaoPagamento.getDescontoPercentual() > 0) {
                 desconto = valorOriginal
@@ -189,14 +176,11 @@ public class ContaPagarServiceImpl implements ContaPagarService {
                     .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             }
         }
-        // Se diffInDays == 0 (pagamento na data): sem multa, juro ou desconto
 
-        // Define os valores calculados na conta
         conta.setMulta(multa);
         conta.setJuro(juro);
         conta.setDesconto(desconto);
 
-        // Calcula o valor de baixa = valor original + multa + juro - desconto
         BigDecimal valorBaixa = valorOriginal
             .add(multa)
             .add(juro)
@@ -205,9 +189,6 @@ public class ContaPagarServiceImpl implements ContaPagarService {
         conta.setValorBaixa(valorBaixa);
     }
 
-    /**
-     * Busca a condição de pagamento associada à conta através da nota de entrada
-     */
     private CondicaoPagamento buscarCondicaoPagamento(ContaPagar conta) {
         if (conta.getNotaEntradaId() == null) {
             return null;

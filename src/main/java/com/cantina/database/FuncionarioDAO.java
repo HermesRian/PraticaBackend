@@ -1,6 +1,7 @@
 package com.cantina.database;
 
 import com.cantina.entities.Funcionario;
+import com.cantina.entities.FuncaoFuncionario;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,39 +13,38 @@ import java.util.List;
 public class FuncionarioDAO {
 
     public void salvar(Funcionario funcionario) {
-        String sql = "INSERT INTO funcionarios (nome, cargo, salario, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo, data_admissao, data_demissao, apelido, rg_inscricao_estadual, cnh, data_validade_cnh, sexo, observacao, estado_civil, is_brasileiro, nacionalidade, data_nascimento, funcao_funcionario_id, cpf_cnpj, created_at, updated_at) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO funcionarios (nome, salario, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo, data_admissao, data_demissao, apelido, rg_inscricao_estadual, cnh, data_validade_cnh, sexo, observacao, estado_civil, is_brasileiro, nacionalidade, data_nascimento, funcao_funcionario_id, cpf_cnpj, created_at, updated_at) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, funcionario.getNome());
-            statement.setString(2, funcionario.getCargo());
-            statement.setBigDecimal(3, funcionario.getSalario());
-            statement.setString(4, funcionario.getEmail());
-            statement.setString(5, funcionario.getTelefone());
-            statement.setString(6, funcionario.getEndereco());
-            statement.setString(7, funcionario.getNumero());
-            statement.setString(8, funcionario.getComplemento());
-            statement.setString(9, funcionario.getBairro());
-            statement.setString(10, funcionario.getCep());
-            statement.setLong(11, funcionario.getCidadeId());
-            statement.setBoolean(12, funcionario.getAtivo());
-            statement.setDate(13, funcionario.getDataAdmissao() != null ? new java.sql.Date(funcionario.getDataAdmissao().getTime()) : null);
-            statement.setDate(14, funcionario.getDataDemissao() != null ? new java.sql.Date(funcionario.getDataDemissao().getTime()) : null);
-            statement.setString(15, funcionario.getApelido());
-            statement.setString(16, funcionario.getRgInscricaoEstadual());
-            statement.setString(17, funcionario.getCnh());
-            statement.setDate(18, funcionario.getDataValidadeCnh() != null ? new java.sql.Date(funcionario.getDataValidadeCnh().getTime()) : null);
-            statement.setObject(19, funcionario.getSexo());
-            statement.setString(20, funcionario.getObservacao());
-            statement.setObject(21, funcionario.getEstadoCivil());
-            statement.setObject(22, funcionario.getIsBrasileiro());
-            statement.setObject(23, funcionario.getNacionalidade());
-            statement.setDate(24, funcionario.getDataNascimento() != null ? new java.sql.Date(funcionario.getDataNascimento().getTime()) : null);
-            statement.setObject(25, funcionario.getFuncaoFuncionarioId());
-            statement.setString(26, funcionario.getCpfCnpj());
+            statement.setBigDecimal(2, funcionario.getSalario());
+            statement.setString(3, funcionario.getEmail());
+            statement.setString(4, funcionario.getTelefone());
+            statement.setString(5, funcionario.getEndereco());
+            statement.setString(6, funcionario.getNumero());
+            statement.setString(7, funcionario.getComplemento());
+            statement.setString(8, funcionario.getBairro());
+            statement.setString(9, funcionario.getCep());
+            statement.setLong(10, funcionario.getCidadeId());
+            statement.setBoolean(11, funcionario.getAtivo());
+            statement.setDate(12, funcionario.getDataAdmissao() != null ? new java.sql.Date(funcionario.getDataAdmissao().getTime()) : null);
+            statement.setDate(13, funcionario.getDataDemissao() != null ? new java.sql.Date(funcionario.getDataDemissao().getTime()) : null);
+            statement.setString(14, funcionario.getApelido());
+            statement.setString(15, funcionario.getRgInscricaoEstadual());
+            statement.setString(16, funcionario.getCnh());
+            statement.setDate(17, funcionario.getDataValidadeCnh() != null ? new java.sql.Date(funcionario.getDataValidadeCnh().getTime()) : null);
+            statement.setObject(18, funcionario.getSexo());
+            statement.setString(19, funcionario.getObservacao());
+            statement.setObject(20, funcionario.getEstadoCivil());
+            statement.setObject(21, funcionario.getIsBrasileiro());
+            statement.setObject(22, funcionario.getNacionalidade());
+            statement.setDate(23, funcionario.getDataNascimento() != null ? new java.sql.Date(funcionario.getDataNascimento().getTime()) : null);
+            statement.setObject(24, funcionario.getFuncaoFuncionarioId());
+            statement.setString(25, funcionario.getCpfCnpj());
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -107,38 +107,37 @@ public class FuncionarioDAO {
     }
 
     public void atualizar(Funcionario funcionario) {
-        String sql = "UPDATE funcionarios SET nome = ?, cargo = ?, salario = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, ativo = ?, data_admissao = ?, data_demissao = ?, apelido = ?, rg_inscricao_estadual = ?, cnh = ?, data_validade_cnh = ?, sexo = ?, observacao = ?, estado_civil = ?, is_brasileiro = ?, nacionalidade = ?, data_nascimento = ?, funcao_funcionario_id = ?, cpf_cnpj = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE funcionarios SET nome = ?, salario = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, ativo = ?, data_admissao = ?, data_demissao = ?, apelido = ?, rg_inscricao_estadual = ?, cnh = ?, data_validade_cnh = ?, sexo = ?, observacao = ?, estado_civil = ?, is_brasileiro = ?, nacionalidade = ?, data_nascimento = ?, funcao_funcionario_id = ?, cpf_cnpj = ?, updated_at = NOW() WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, funcionario.getNome());
-            statement.setString(2, funcionario.getCargo());
-            statement.setBigDecimal(3, funcionario.getSalario());
-            statement.setString(4, funcionario.getEmail());
-            statement.setString(5, funcionario.getTelefone());
-            statement.setString(6, funcionario.getEndereco());
-            statement.setString(7, funcionario.getNumero());
-            statement.setString(8, funcionario.getComplemento());
-            statement.setString(9, funcionario.getBairro());
-            statement.setString(10, funcionario.getCep());
-            statement.setLong(11, funcionario.getCidadeId());
-            statement.setBoolean(12, funcionario.getAtivo());
-            statement.setDate(13, funcionario.getDataAdmissao() != null ? new java.sql.Date(funcionario.getDataAdmissao().getTime()) : null);
-            statement.setDate(14, funcionario.getDataDemissao() != null ? new java.sql.Date(funcionario.getDataDemissao().getTime()) : null);
-            statement.setString(15, funcionario.getApelido());
-            statement.setString(16, funcionario.getRgInscricaoEstadual());
-            statement.setString(17, funcionario.getCnh());
-            statement.setDate(18, funcionario.getDataValidadeCnh() != null ? new java.sql.Date(funcionario.getDataValidadeCnh().getTime()) : null);
-            statement.setObject(19, funcionario.getSexo());
-            statement.setString(20, funcionario.getObservacao());
-            statement.setObject(21, funcionario.getEstadoCivil());
-            statement.setObject(22, funcionario.getIsBrasileiro());
-            statement.setObject(23, funcionario.getNacionalidade());
-            statement.setDate(24, funcionario.getDataNascimento() != null ? new java.sql.Date(funcionario.getDataNascimento().getTime()) : null);
-            statement.setObject(25, funcionario.getFuncaoFuncionarioId());
-            statement.setString(26, funcionario.getCpfCnpj());
-            statement.setLong(27, funcionario.getId());
+            statement.setBigDecimal(2, funcionario.getSalario());
+            statement.setString(3, funcionario.getEmail());
+            statement.setString(4, funcionario.getTelefone());
+            statement.setString(5, funcionario.getEndereco());
+            statement.setString(6, funcionario.getNumero());
+            statement.setString(7, funcionario.getComplemento());
+            statement.setString(8, funcionario.getBairro());
+            statement.setString(9, funcionario.getCep());
+            statement.setLong(10, funcionario.getCidadeId());
+            statement.setBoolean(11, funcionario.getAtivo());
+            statement.setDate(12, funcionario.getDataAdmissao() != null ? new java.sql.Date(funcionario.getDataAdmissao().getTime()) : null);
+            statement.setDate(13, funcionario.getDataDemissao() != null ? new java.sql.Date(funcionario.getDataDemissao().getTime()) : null);
+            statement.setString(14, funcionario.getApelido());
+            statement.setString(15, funcionario.getRgInscricaoEstadual());
+            statement.setString(16, funcionario.getCnh());
+            statement.setDate(17, funcionario.getDataValidadeCnh() != null ? new java.sql.Date(funcionario.getDataValidadeCnh().getTime()) : null);
+            statement.setObject(18, funcionario.getSexo());
+            statement.setString(19, funcionario.getObservacao());
+            statement.setObject(20, funcionario.getEstadoCivil());
+            statement.setObject(21, funcionario.getIsBrasileiro());
+            statement.setObject(22, funcionario.getNacionalidade());
+            statement.setDate(23, funcionario.getDataNascimento() != null ? new java.sql.Date(funcionario.getDataNascimento().getTime()) : null);
+            statement.setObject(24, funcionario.getFuncaoFuncionarioId());
+            statement.setString(25, funcionario.getCpfCnpj());
+            statement.setLong(26, funcionario.getId());
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -150,7 +149,6 @@ public class FuncionarioDAO {
         Funcionario funcionario = new Funcionario();
         funcionario.setId(resultSet.getLong("id"));
         funcionario.setNome(resultSet.getString("nome"));
-        funcionario.setCargo(resultSet.getString("cargo"));
         funcionario.setSalario(resultSet.getBigDecimal("salario"));
         funcionario.setEmail(resultSet.getString("email"));
         funcionario.setTelefone(resultSet.getString("telefone"));
@@ -178,6 +176,13 @@ public class FuncionarioDAO {
         funcionario.setDataNascimento(resultSet.getDate("data_nascimento"));
         funcionario.setFuncaoFuncionarioId((Long) resultSet.getObject("funcao_funcionario_id"));
         funcionario.setCpfCnpj(resultSet.getString("cpf_cnpj"));
+
+        if (funcionario.getFuncaoFuncionarioId() != null) {
+            FuncaoFuncionarioDAO funcaoDAO = new FuncaoFuncionarioDAO();
+            FuncaoFuncionario funcao = funcaoDAO.buscarPorId(funcionario.getFuncaoFuncionarioId());
+            funcionario.setFuncaoFuncionario(funcao);
+        }
+
         return funcionario;
     }
 }

@@ -33,13 +33,10 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
 
     @Override
     public NotaEntrada salvar(NotaEntrada notaEntrada) {
-        // Salva a nota de entrada
         notaEntradaDAO.salvar(notaEntrada);
 
-        // Atualiza estoque e valorCompra dos produtos
         atualizarEstoqueEValorCompra(notaEntrada);
 
-        // Se a nota tiver condição de pagamento, gera as contas a pagar automaticamente
         if (notaEntrada.getCondicaoPagamentoId() != null) {
             CondicaoPagamento condicaoPagamento = condicaoPagamentoDAO.buscarPorId(notaEntrada.getCondicaoPagamentoId());
 
@@ -103,7 +100,6 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             throw new RuntimeException("Não é possível cancelar uma nota que já foi paga");
         }
 
-        // Verifica se alguma parcela já foi paga
         List<ContaPagar> contas = contaPagarDAO.buscarPorNotaEntradaId(id);
         boolean algumaParcelajaPaga = contas.stream()
                 .anyMatch(conta -> conta.getStatus() == StatusContaPagar.PAGA);
@@ -112,13 +108,10 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             throw new RuntimeException("Não é possível cancelar a nota porque uma ou mais parcelas já foram pagas");
         }
 
-        // Reverte estoque e valorCompra dos produtos
         reverterEstoqueEValorCompra(nota);
 
-        // Cancela todas as contas a pagar desta nota que ainda não foram pagas
         contaPagarDAO.cancelarTodasPorNotaEntrada(id, "Nota de entrada cancelada");
 
-        // Atualiza o status da nota para CANCELADA
         notaEntradaDAO.atualizarStatus(id, StatusNotaEntrada.CANCELADA.name());
     }
 
@@ -214,17 +207,14 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
                 Produto produto = produtoDAO.buscarPorId(item.getProdutoId());
 
                 if (produto != null) {
-                    // Reverte estoque (subtrai a quantidade)
                     Integer quantidadeAtual = produto.getQuantidadeEstoque() != null ? produto.getQuantidadeEstoque() : 0;
                     Integer quantidadeRemover = item.getQuantidade() != null ? item.getQuantidade().intValue() : 0;
                     Integer novaQuantidade = Math.max(0, quantidadeAtual - quantidadeRemover); // Não deixa ficar negativo
                     produtoDAO.atualizarEstoque(produto.getId(), novaQuantidade);
 
-                    // Busca o valor unitário da nota mais recente deste produto (excluindo a nota cancelada)
                     BigDecimal valorAnterior = notaEntradaDAO.buscarValorUnitarioMaisRecenteProduto(item.getProdutoId(), nota.getId());
-                    produtoDAO.atualizarValorCompra(produto.getId(), valorAnterior); // Se null, define como null
+                    produtoDAO.atualizarValorCompra(produto.getId(), valorAnterior);
 
-                    // Recalcula o custoProduto baseado na nota anterior
                     BigDecimal custoAnterior = calcularCustoProdutoNotaAnterior(item.getProdutoId(), nota.getId());
                     produtoDAO.atualizarCustoProduto(produto.getId(), custoAnterior);
                 }
@@ -241,7 +231,6 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             return null;
         }
 
-        // Calcula as despesas totais da nota (frete + seguro + outras - desconto)
         BigDecimal frete = nota.getValorFrete() != null ? nota.getValorFrete() : BigDecimal.ZERO;
         BigDecimal seguro = nota.getValorSeguro() != null ? nota.getValorSeguro() : BigDecimal.ZERO;
         BigDecimal outrasDespesas = nota.getOutrasDespesas() != null ? nota.getOutrasDespesas() : BigDecimal.ZERO;
@@ -249,48 +238,34 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
 
         BigDecimal despesasTotais = frete.add(seguro).add(outrasDespesas).subtract(desconto);
 
-        // Se não há despesas, o custo é igual ao valor de compra
         if (despesasTotais.compareTo(BigDecimal.ZERO) <= 0) {
             return item.getValorUnitario();
         }
 
-        // Calcula o valor total dos produtos na nota
         BigDecimal valorProdutos = nota.getValorProdutos() != null ? nota.getValorProdutos() : BigDecimal.ZERO;
 
-        // Se valorProdutos é zero, retorna apenas o valor unitário para evitar divisão por zero
         if (valorProdutos.compareTo(BigDecimal.ZERO) == 0) {
             return item.getValorUnitario();
         }
 
-        // Calcula o valor total deste item (valorUnitario * quantidade)
         BigDecimal valorTotalItem = item.getValorUnitario().multiply(item.getQuantidade());
 
-        // Calcula o percentual que este item representa do total de produtos
         BigDecimal percentualItem = valorTotalItem.divide(valorProdutos, 6, RoundingMode.HALF_UP);
 
-        // Calcula as despesas rateadas para este item
         BigDecimal despesasRateadas = despesasTotais.multiply(percentualItem);
 
-        // Calcula as despesas por unidade
         BigDecimal despesasPorUnidade = despesasRateadas.divide(item.getQuantidade(), 6, RoundingMode.HALF_UP);
 
-        // Custo final = valor unitário + despesas por unidade
         return item.getValorUnitario().add(despesasPorUnidade).setScale(2, RoundingMode.HALF_UP);
     }
 
-    /**
-     * Busca e calcula o custo do produto baseado na nota anterior (mais recente antes da cancelada)
-     * Retorna null se não houver nota anterior
-     */
     private BigDecimal calcularCustoProdutoNotaAnterior(Long produtoId, Long notaCanceladaId) {
-        // Busca a nota anterior mais recente deste produto
         NotaEntrada notaAnterior = notaEntradaDAO.buscarNotaMaisRecenteProduto(produtoId, notaCanceladaId);
 
         if (notaAnterior == null) {
-            return null; // Não há nota anterior, custo fica null
+            return null;
         }
 
-        // Busca o item do produto na nota anterior
         ItemNotaEntrada itemAnterior = notaAnterior.getItens().stream()
                 .filter(item -> produtoId.equals(item.getProdutoId()))
                 .findFirst()
@@ -300,7 +275,6 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
             return null;
         }
 
-        // Calcula o custo com base na nota anterior
         return calcularCustoProdutoComRateio(notaAnterior, itemAnterior);
     }
 }

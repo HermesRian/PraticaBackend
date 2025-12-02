@@ -10,7 +10,6 @@ import java.util.Date;
 public class Funcionario {
     private Long id;
     private String nome;
-    private String cargo;
     private BigDecimal salario;
     private String email;
     private String telefone;
@@ -37,4 +36,6 @@ public class Funcionario {
     private Date dataNascimento;
     private Long funcaoFuncionarioId;
     private String cpfCnpj;
+
+    private FuncaoFuncionario funcaoFuncionario;
 }
