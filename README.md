@@ -1,5 +1,4 @@
 DDL CRIAÇÃO BANCO MYSQL:
-
 CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
 CREATE TABLE `categorias` (
@@ -112,7 +111,44 @@ CREATE TABLE `contas_pagar` (
   CONSTRAINT `fk_conta_pagar_forma_pagamento` FOREIGN KEY (`forma_pagamento_id`) REFERENCES `formas_pagamento` (`id`),
   CONSTRAINT `fk_conta_pagar_fornecedor` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedores` (`id`),
   CONSTRAINT `fk_conta_pagar_nota_entrada` FOREIGN KEY (`nota_entrada_id`) REFERENCES `notas_entrada` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `contas_receber` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `numero` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `modelo` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `serie` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `parcela` int NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `desconto` decimal(10,2) DEFAULT '0.00',
+  `multa` decimal(10,2) DEFAULT '0.00',
+  `juro` decimal(10,2) DEFAULT '0.00',
+  `valor_baixa` decimal(10,2) DEFAULT NULL,
+  `cliente_id` bigint NOT NULL,
+  `forma_pagamento_id` bigint DEFAULT NULL,
+  `nota_saida_id` bigint DEFAULT NULL,
+  `data_vencimento` date NOT NULL,
+  `data_emissao` date DEFAULT NULL,
+  `data_baixa` date DEFAULT NULL,
+  `data_pagamento` date DEFAULT NULL,
+  `data_cancelamento` date DEFAULT NULL,
+  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDENTE',
+  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `justificativa_cancelamento` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cliente_id` (`cliente_id`),
+  KEY `idx_forma_pagamento_id` (`forma_pagamento_id`),
+  KEY `idx_nota_saida_id` (`nota_saida_id`),
+  KEY `idx_data_vencimento` (`data_vencimento`),
+  KEY `idx_data_pagamento` (`data_pagamento`),
+  KEY `idx_parcela` (`parcela`),
+  KEY `idx_status` (`status`),
+  CONSTRAINT `fk_conta_receber_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
+  CONSTRAINT `fk_conta_receber_forma_pagamento` FOREIGN KEY (`forma_pagamento_id`) REFERENCES `formas_pagamento` (`id`),
+  CONSTRAINT `fk_conta_receber_nota_saida` FOREIGN KEY (`nota_saida_id`) REFERENCES `notas_saida` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `estados` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -170,7 +206,6 @@ CREATE TABLE `fornecedores` (
 
 CREATE TABLE `funcionarios` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `cargo` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `nome` varchar(255) DEFAULT NULL,
   `telefone` varchar(255) DEFAULT NULL,
@@ -196,15 +231,18 @@ CREATE TABLE `funcionarios` (
   `is_brasileiro` int DEFAULT NULL,
   `nacionalidade` int DEFAULT NULL,
   `data_nascimento` date DEFAULT NULL,
+  `funcoes_funcionarios_id` bigint DEFAULT NULL,
   `funcao_funcionario_id` bigint DEFAULT NULL,
   `cpf_cnpj` varchar(14) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_funcionario_cidade` (`cidade_id`),
   KEY `fk_funcionario_funcao` (`funcao_funcionario_id`),
   KEY `idx_funcionario_email` (`email`),
+  KEY `fk_funcionarios_funcoes_funcionarios` (`funcoes_funcionarios_id`),
   CONSTRAINT `fk_funcionario_cidade` FOREIGN KEY (`cidade_id`) REFERENCES `cidades` (`id`),
-  CONSTRAINT `fk_funcionario_funcao` FOREIGN KEY (`funcao_funcionario_id`) REFERENCES `funcoes_funcionarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_funcionario_funcao` FOREIGN KEY (`funcao_funcionario_id`) REFERENCES `funcoes_funcionarios` (`id`),
+  CONSTRAINT `fk_funcionarios_funcoes_funcionarios` FOREIGN KEY (`funcoes_funcionarios_id`) REFERENCES `funcoes_funcionarios` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `funcoes_funcionarios` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -270,7 +308,44 @@ CREATE TABLE `notas_entrada` (
   CONSTRAINT `fk_compra_condicao_pagamento` FOREIGN KEY (`condicao_pagamento_id`) REFERENCES `condicoes_pagamento` (`id`),
   CONSTRAINT `fk_compra_fornecedor` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedores` (`id`),
   CONSTRAINT `fk_compra_transportadora` FOREIGN KEY (`transportadora_id`) REFERENCES `transportadoras` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notas_saida` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `numero` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `codigo` varchar(50) DEFAULT NULL,
+  `modelo` varchar(10) DEFAULT NULL,
+  `serie` varchar(10) DEFAULT NULL,
+  `cliente_id` bigint NOT NULL,
+  `data_emissao` date NOT NULL,
+  `data_chegada` date DEFAULT NULL,
+  `data_recebimento` date DEFAULT NULL,
+  `condicao_pagamento_id` bigint NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'PENDENTE',
+  `tipo_frete` varchar(20) DEFAULT 'CIF',
+  `transportadora_id` bigint DEFAULT NULL,
+  `valor_frete` decimal(15,2) DEFAULT '0.00',
+  `valor_seguro` decimal(15,2) DEFAULT '0.00',
+  `outras_despesas` decimal(15,2) DEFAULT '0.00',
+  `valor_desconto` decimal(15,2) DEFAULT '0.00',
+  `valor_produtos` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `valor_total` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `observacoes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_numero_nota_saida` (`numero`),
+  KEY `idx_venda_cliente` (`cliente_id`),
+  KEY `idx_venda_condicao_pagamento` (`condicao_pagamento_id`),
+  KEY `idx_venda_transportadora` (`transportadora_id`),
+  KEY `idx_venda_status` (`status`),
+  KEY `idx_venda_data_emissao` (`data_emissao`),
+  KEY `idx_venda_ativo` (`ativo`),
+  CONSTRAINT `fk_venda_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
+  CONSTRAINT `fk_venda_condicao_pagamento` FOREIGN KEY (`condicao_pagamento_id`) REFERENCES `condicoes_pagamento` (`id`),
+  CONSTRAINT `fk_venda_transportadora` FOREIGN KEY (`transportadora_id`) REFERENCES `transportadoras` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `paises` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -359,6 +434,34 @@ CREATE TABLE `produtos_nota` (
   CONSTRAINT `chk_valor_unitario_positivo` CHECK ((`valor_unitario` >= 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `produtos_nota_saida` (
+  `nota_saida_id` bigint NOT NULL,
+  `produto_id` bigint NOT NULL,
+  `sequencia` int NOT NULL DEFAULT '1',
+  `quantidade` decimal(15,4) NOT NULL,
+  `valor_unitario` decimal(15,4) NOT NULL,
+  `valor_desconto` decimal(15,4) DEFAULT '0.0000',
+  `percentual_desconto` decimal(5,2) DEFAULT '0.00',
+  `valor_total` decimal(15,4) NOT NULL,
+  `rateio_frete` decimal(15,4) DEFAULT '0.0000',
+  `rateio_seguro` decimal(15,4) DEFAULT '0.0000',
+  `rateio_outras` decimal(15,4) DEFAULT '0.0000',
+  `custo_preco_final` decimal(15,4) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`nota_saida_id`,`produto_id`,`sequencia`),
+  KEY `idx_produtos_nota_saida_produto` (`produto_id`),
+  KEY `idx_produtos_nota_saida_nota` (`nota_saida_id`),
+  CONSTRAINT `fk_produtos_nota_saida_nota_saida` FOREIGN KEY (`nota_saida_id`) REFERENCES `notas_saida` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_produtos_nota_saida_produto` FOREIGN KEY (`produto_id`) REFERENCES `produtos` (`id`),
+  CONSTRAINT `chk_produtos_saida_percentual_desconto_valido` CHECK (((`percentual_desconto` >= 0) and (`percentual_desconto` <= 100))),
+  CONSTRAINT `chk_produtos_saida_quantidade_positiva` CHECK ((`quantidade` > 0)),
+  CONSTRAINT `chk_produtos_saida_sequencia_positiva` CHECK ((`sequencia` > 0)),
+  CONSTRAINT `chk_produtos_saida_valor_desconto_positivo` CHECK ((`valor_desconto` >= 0)),
+  CONSTRAINT `chk_produtos_saida_valor_total_positivo` CHECK ((`valor_total` >= 0)),
+  CONSTRAINT `chk_produtos_saida_valor_unitario_positivo` CHECK ((`valor_unitario` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `transportadoras` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `razao_social` varchar(150) NOT NULL,
@@ -401,13 +504,3 @@ CREATE TABLE `unidades_medida` (
   KEY `idx_unidade_medida_nome` (`nome`),
   KEY `idx_unidade_medida_situacao` (`status`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
-CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
-CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
-CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
-CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
