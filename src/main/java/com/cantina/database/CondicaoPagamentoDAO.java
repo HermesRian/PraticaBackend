@@ -16,18 +16,17 @@ import com.cantina.database.ParcelaCondicaoPagamentoDAO;
 public class CondicaoPagamentoDAO {
 
     public void salvar(CondicaoPagamento condicaoPagamento) {
-        String sql = "INSERT INTO condicoes_pagamento (nome, dias, parcelas, status, juros_percentual, multa_percentual, desconto_percentual, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO condicoes_pagamento (nome, parcelas, status, juros_percentual, multa_percentual, desconto_percentual, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, condicaoPagamento.getNome());
-            statement.setInt(2, condicaoPagamento.getDias());
-            statement.setInt(3, condicaoPagamento.getParcelas());
-            statement.setBoolean(4, condicaoPagamento.getAtivo() != null ? condicaoPagamento.getAtivo() : true);
-            statement.setDouble(5, condicaoPagamento.getJurosPercentual());
-            statement.setDouble(6, condicaoPagamento.getMultaPercentual());
-            statement.setDouble(7, condicaoPagamento.getDescontoPercentual());
+            statement.setInt(2, condicaoPagamento.getParcelas());
+            statement.setBoolean(3, condicaoPagamento.getAtivo() != null ? condicaoPagamento.getAtivo() : true);
+            statement.setDouble(4, condicaoPagamento.getJurosPercentual());
+            statement.setDouble(5, condicaoPagamento.getMultaPercentual());
+            statement.setDouble(6, condicaoPagamento.getDescontoPercentual());
 
             statement.executeUpdate();
 
@@ -55,7 +54,6 @@ public class CondicaoPagamentoDAO {
                 CondicaoPagamento condicao = new CondicaoPagamento();
                 condicao.setId(resultSet.getLong("id"));
                 condicao.setNome(resultSet.getString("nome"));
-                condicao.setDias(resultSet.getInt("dias"));
                 condicao.setParcelas(resultSet.getInt("parcelas"));
                 condicao.setAtivo(resultSet.getBoolean("status"));
                 condicao.setJurosPercentual(resultSet.getDouble("juros_percentual"));
@@ -90,7 +88,6 @@ public class CondicaoPagamentoDAO {
                 condicao = new CondicaoPagamento();
                 condicao.setId(resultSet.getLong("id"));
                 condicao.setNome(resultSet.getString("nome"));
-                condicao.setDias(resultSet.getInt("dias"));
                 condicao.setParcelas(resultSet.getInt("parcelas"));
                 condicao.setAtivo(resultSet.getBoolean("status"));
                 condicao.setJurosPercentual(resultSet.getDouble("juros_percentual"));
@@ -111,7 +108,7 @@ public class CondicaoPagamentoDAO {
     }
 
     public void atualizar(CondicaoPagamento condicaoPagamento) {
-        String sqlCondicao = "UPDATE condicoes_pagamento SET nome = ?, dias = ?, parcelas = ?, status = ?, juros_percentual = ?, multa_percentual = ?, desconto_percentual = ?, updated_at = NOW() WHERE id = ?";
+        String sqlCondicao = "UPDATE condicoes_pagamento SET nome = ?, parcelas = ?, status = ?, juros_percentual = ?, multa_percentual = ?, desconto_percentual = ?, updated_at = NOW() WHERE id = ?";
         String sqlExcluirParcelas = "DELETE FROM parcelas_condicao_pagamento WHERE condicao_pagamento_id = ?";
         String sqlInserirParcela = "INSERT INTO parcelas_condicao_pagamento (numero_parcela, dias, percentual, condicao_pagamento_id, forma_pagamento_id) VALUES (?, ?, ?, ?, ?)";
 
@@ -123,13 +120,12 @@ public class CondicaoPagamentoDAO {
                  PreparedStatement statementInserirParcela = connection.prepareStatement(sqlInserirParcela)) {
 
                 statementCondicao.setString(1, condicaoPagamento.getNome());
-                statementCondicao.setInt(2, condicaoPagamento.getDias());
-                statementCondicao.setInt(3, condicaoPagamento.getParcelas());
-                statementCondicao.setBoolean(4, condicaoPagamento.getAtivo() != null ? condicaoPagamento.getAtivo() : true);
-                statementCondicao.setDouble(5, condicaoPagamento.getJurosPercentual());
-                statementCondicao.setDouble(6, condicaoPagamento.getMultaPercentual());
-                statementCondicao.setDouble(7, condicaoPagamento.getDescontoPercentual());
-                statementCondicao.setLong(8, condicaoPagamento.getId());
+                statementCondicao.setInt(2, condicaoPagamento.getParcelas());
+                statementCondicao.setBoolean(3, condicaoPagamento.getAtivo() != null ? condicaoPagamento.getAtivo() : true);
+                statementCondicao.setDouble(4, condicaoPagamento.getJurosPercentual());
+                statementCondicao.setDouble(5, condicaoPagamento.getMultaPercentual());
+                statementCondicao.setDouble(6, condicaoPagamento.getDescontoPercentual());
+                statementCondicao.setLong(7, condicaoPagamento.getId());
                 statementCondicao.executeUpdate();
 
                 statementExcluirParcelas.setLong(1, condicaoPagamento.getId());

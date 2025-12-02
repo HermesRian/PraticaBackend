@@ -10,7 +10,6 @@ import lombok.Data;
 public class CondicaoPagamento {
     private Long id;
     private String nome;
-    private Integer dias;
     private Integer parcelas;
     private Boolean ativo;
     private Double jurosPercentual;
