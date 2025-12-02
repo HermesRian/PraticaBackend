@@ -181,14 +181,14 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
                     Integer novaQuantidade = quantidadeAtual + quantidadeAdicionar;
                     produtoDAO.atualizarEstoque(produto.getId(), novaQuantidade);
 
-                    // Atualiza valorCompra (sempre usa o valor da nota mais recente)
                     if (item.getValorUnitario() != null) {
                         produtoDAO.atualizarValorCompra(produto.getId(), item.getValorUnitario());
                     }
 
-                    // Calcula e atualiza o custoProduto com rateio das despesas
                     BigDecimal custoProduto = calcularCustoProdutoComRateio(nota, item);
                     produtoDAO.atualizarCustoProduto(produto.getId(), custoProduto);
+
+                    produtoDAO.calcularEAtualizarPercentualLucro(produto.getId());
                 }
             }
         }
@@ -217,6 +217,8 @@ public class NotaEntradaServiceImpl implements NotaEntradaService {
 
                     BigDecimal custoAnterior = calcularCustoProdutoNotaAnterior(item.getProdutoId(), nota.getId());
                     produtoDAO.atualizarCustoProduto(produto.getId(), custoAnterior);
+
+                    produtoDAO.calcularEAtualizarPercentualLucro(produto.getId());
                 }
             }
         }

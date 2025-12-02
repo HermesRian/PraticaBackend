@@ -103,6 +103,7 @@ public class NotaSaidaServiceImpl implements NotaSaidaService {
 
                     if (item.getValorUnitario() != null) {
                         produtoDAO.atualizarValorVenda(produto.getId(), item.getValorUnitario());
+                        produtoDAO.calcularEAtualizarPercentualLucro(produto.getId());
                     }
                 }
             }

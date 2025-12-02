@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.*;
 
 @Repository
@@ -227,6 +228,42 @@ public class ProdutoDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao atualizar custo do produto: " + e.getMessage(), e);
+        }
+    }
+
+    public void calcularEAtualizarPercentualLucro(Long id) {
+        Produto produto = buscarPorId(id);
+
+        if (produto == null) {
+            return;
+        }
+
+        BigDecimal custoProduto = produto.getCustoProduto();
+        BigDecimal valorVenda = produto.getValorVenda();
+
+        if (custoProduto == null || valorVenda == null ||
+            custoProduto.compareTo(BigDecimal.ZERO) == 0) {
+            return;
+        }
+
+        BigDecimal lucro = valorVenda.subtract(custoProduto);
+        BigDecimal percentualLucro = lucro
+            .divide(custoProduto, 6, RoundingMode.HALF_UP)
+            .multiply(BigDecimal.valueOf(100))
+            .setScale(2, RoundingMode.HALF_UP);
+
+        String sql = "UPDATE produtos SET percentual_lucro = ?, updated_at = NOW() WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setBigDecimal(1, percentualLucro);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao atualizar percentual de lucro do produto: " + e.getMessage(), e);
         }
     }
 }
