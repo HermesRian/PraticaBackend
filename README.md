@@ -1,0 +1,413 @@
+DDL CRIAÇÃO BANCO MYSQL:
+
+CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE TABLE `categorias` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `cidades` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) DEFAULT NULL,
+  `codigo_ibge` varchar(10) DEFAULT NULL,
+  `estado_id` bigint NOT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `ddd` int DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `estado_id` (`estado_id`),
+  CONSTRAINT `cidades_ibfk_1` FOREIGN KEY (`estado_id`) REFERENCES `estados` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `clientes` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `cnpjCpf` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  `telefone` varchar(255) DEFAULT NULL,
+  `cidade_id` bigint DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `numero` varchar(20) DEFAULT NULL,
+  `complemento` varchar(20) DEFAULT NULL,
+  `bairro` varchar(30) DEFAULT NULL,
+  `cep` varchar(10) DEFAULT NULL,
+  `apelido` varchar(60) DEFAULT NULL,
+  `limite_credito` decimal(10,2) DEFAULT '0.00',
+  `nacionalidade` varchar(255) DEFAULT NULL,
+  `rg_inscricao_estadual` varchar(14) DEFAULT NULL,
+  `data_nascimento` date DEFAULT NULL,
+  `estado_civil` varchar(255) DEFAULT NULL,
+  `tipo` int DEFAULT NULL,
+  `sexo` varchar(1) DEFAULT NULL,
+  `condicao_pagamento_id` bigint DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_cnpjCpf` (`cnpjCpf`),
+  UNIQUE KEY `idx_cliente_cnpjCpf` (`cnpjCpf`),
+  KEY `fk_cliente_cidade` (`cidade_id`),
+  KEY `fk_cliente_condicao_pagamento` (`condicao_pagamento_id`),
+  KEY `idx_cliente_cpf_cpnj` (`cnpjCpf`),
+  KEY `idx_cliente_tipo` (`tipo`),
+  CONSTRAINT `fk_cliente_cidade` FOREIGN KEY (`cidade_id`) REFERENCES `cidades` (`id`),
+  CONSTRAINT `fk_cliente_condicao_pagamento` FOREIGN KEY (`condicao_pagamento_id`) REFERENCES `condicoes_pagamento` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `condicoes_pagamento` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(50) DEFAULT NULL,
+  `parcelas` int DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `juros_percentual` decimal(5,2) DEFAULT '0.00',
+  `multa_percentual` decimal(5,2) DEFAULT '0.00',
+  `desconto_percentual` decimal(5,2) DEFAULT '0.00',
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `contas_pagar` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `numero` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `modelo` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `serie` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `parcela` int NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `desconto` decimal(10,2) DEFAULT '0.00',
+  `multa` decimal(10,2) DEFAULT '0.00',
+  `juro` decimal(10,2) DEFAULT '0.00',
+  `valor_baixa` decimal(10,2) DEFAULT NULL,
+  `fornecedor_id` bigint NOT NULL,
+  `forma_pagamento_id` bigint DEFAULT NULL,
+  `nota_entrada_id` bigint DEFAULT NULL,
+  `data_vencimento` date NOT NULL,
+  `data_emissao` date DEFAULT NULL,
+  `data_baixa` date DEFAULT NULL,
+  `data_pagamento` date DEFAULT NULL,
+  `data_cancelamento` date DEFAULT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDENTE',
+  `descricao` text COLLATE utf8mb4_unicode_ci,
+  `justificativa_cancelamento` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_fornecedor_id` (`fornecedor_id`),
+  KEY `idx_forma_pagamento_id` (`forma_pagamento_id`),
+  KEY `idx_nota_entrada_id` (`nota_entrada_id`),
+  KEY `idx_data_vencimento` (`data_vencimento`),
+  KEY `idx_data_pagamento` (`data_pagamento`),
+  KEY `idx_parcela` (`parcela`),
+  KEY `idx_status` (`status`),
+  CONSTRAINT `fk_conta_pagar_forma_pagamento` FOREIGN KEY (`forma_pagamento_id`) REFERENCES `formas_pagamento` (`id`),
+  CONSTRAINT `fk_conta_pagar_fornecedor` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedores` (`id`),
+  CONSTRAINT `fk_conta_pagar_nota_entrada` FOREIGN KEY (`nota_entrada_id`) REFERENCES `notas_entrada` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `estados` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `uf` varchar(2) NOT NULL,
+  `pais_id` bigint DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_estado_pais` (`pais_id`),
+  CONSTRAINT `fk_estado_pais` FOREIGN KEY (`pais_id`) REFERENCES `paises` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `formas_pagamento` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(50) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `fornecedores` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome_fantasia` varchar(255) DEFAULT NULL,
+  `cpf_cnpj` varchar(255) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `telefone` varchar(255) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `razao_social` varchar(100) DEFAULT NULL,
+  `complemento` varchar(45) DEFAULT NULL,
+  `bairro` varchar(45) DEFAULT NULL,
+  `cep` varchar(10) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `cidade_id` bigint DEFAULT NULL,
+  `numero` varchar(20) DEFAULT NULL,
+  `rg_inscricao_estadual` varchar(50) DEFAULT NULL,
+  `condicao_pagamento_id` bigint DEFAULT NULL,
+  `limite_credito` decimal(15,2) DEFAULT '0.00',
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  `tipo` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cnpj` (`cpf_cnpj`),
+  KEY `fk_fornecedor_cidade` (`cidade_id`),
+  KEY `idx_fornecedor_email` (`email`),
+  KEY `fk_fornecedor_condicao` (`condicao_pagamento_id`),
+  CONSTRAINT `fk_fornecedor_cidade` FOREIGN KEY (`cidade_id`) REFERENCES `cidades` (`id`),
+  CONSTRAINT `fk_fornecedor_condicao` FOREIGN KEY (`condicao_pagamento_id`) REFERENCES `condicoes_pagamento` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `funcionarios` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `cargo` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  `telefone` varchar(255) DEFAULT NULL,
+  `salario` decimal(10,2) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `bairro` varchar(100) DEFAULT NULL,
+  `cep` varchar(10) DEFAULT NULL,
+  `numero` varchar(20) DEFAULT NULL,
+  `complemento` varchar(100) DEFAULT NULL,
+  `ativo` tinyint(1) DEFAULT '1',
+  `cidade_id` bigint DEFAULT NULL,
+  `data_admissao` date DEFAULT NULL,
+  `data_demissao` date DEFAULT NULL,
+  `apelido` varchar(60) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `rg_inscricao_estadual` varchar(14) DEFAULT NULL,
+  `cnh` varchar(25) DEFAULT NULL,
+  `data_validade_cnh` date DEFAULT NULL,
+  `sexo` int DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  `estado_civil` int DEFAULT NULL,
+  `is_brasileiro` int DEFAULT NULL,
+  `nacionalidade` int DEFAULT NULL,
+  `data_nascimento` date DEFAULT NULL,
+  `funcao_funcionario_id` bigint DEFAULT NULL,
+  `cpf_cnpj` varchar(14) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_funcionario_cidade` (`cidade_id`),
+  KEY `fk_funcionario_funcao` (`funcao_funcionario_id`),
+  KEY `idx_funcionario_email` (`email`),
+  CONSTRAINT `fk_funcionario_cidade` FOREIGN KEY (`cidade_id`) REFERENCES `cidades` (`id`),
+  CONSTRAINT `fk_funcionario_funcao` FOREIGN KEY (`funcao_funcionario_id`) REFERENCES `funcoes_funcionarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `funcoes_funcionarios` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `descricao` varchar(255) NOT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  `requer_cnh` tinyint(1) DEFAULT NULL,
+  `carga_horaria` decimal(10,2) DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  `user_criacao` text,
+  `user_atualizacao` text,
+  PRIMARY KEY (`id`),
+  KEY `idx_funcao_ativo` (`status`),
+  KEY `idx_funcao_descricao` (`descricao`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `marcas` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(60) NOT NULL COMMENT 'Nome da marca',
+  `ativo` tinyint(1) DEFAULT '1',
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_marca_nome` (`nome`),
+  KEY `idx_marca_situacao` (`ativo`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notas_entrada` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `numero` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `codigo` varchar(50) DEFAULT NULL COMMENT 'Código da nota fiscal',
+  `modelo` varchar(10) DEFAULT NULL COMMENT 'Modelo da nota fiscal',
+  `serie` varchar(10) DEFAULT NULL COMMENT 'Série da nota fiscal',
+  `fornecedor_id` bigint NOT NULL,
+  `data_emissao` date NOT NULL,
+  `data_chegada` date DEFAULT NULL COMMENT 'Data de chegada prevista',
+  `data_recebimento` date DEFAULT NULL,
+  `condicao_pagamento_id` bigint NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'PENDENTE',
+  `tipo_frete` varchar(20) DEFAULT 'CIF',
+  `transportadora_id` bigint DEFAULT NULL,
+  `valor_frete` decimal(15,2) DEFAULT '0.00',
+  `valor_seguro` decimal(15,2) DEFAULT '0.00',
+  `outras_despesas` decimal(15,2) DEFAULT '0.00',
+  `valor_desconto` decimal(15,2) DEFAULT '0.00',
+  `valor_produtos` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Mantido para compatibilidade',
+  `valor_total` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Mantido para compatibilidade',
+  `observacoes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_numero_pedido` (`numero`),
+  KEY `idx_compra_fornecedor` (`fornecedor_id`),
+  KEY `idx_compra_condicao_pagamento` (`condicao_pagamento_id`),
+  KEY `idx_compra_transportadora` (`transportadora_id`),
+  KEY `idx_compra_status` (`status`),
+  KEY `idx_compra_data_emissao` (`data_emissao`),
+  KEY `idx_compra_ativo` (`ativo`),
+  CONSTRAINT `fk_compra_condicao_pagamento` FOREIGN KEY (`condicao_pagamento_id`) REFERENCES `condicoes_pagamento` (`id`),
+  CONSTRAINT `fk_compra_fornecedor` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedores` (`id`),
+  CONSTRAINT `fk_compra_transportadora` FOREIGN KEY (`transportadora_id`) REFERENCES `transportadoras` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `paises` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `sigla` varchar(5) DEFAULT NULL,
+  `ddi` varchar(4) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `parcelas_condicao_pagamento` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `numero_parcela` int NOT NULL,
+  `dias` int NOT NULL,
+  `percentual` decimal(10,2) NOT NULL,
+  `condicao_pagamento_id` bigint NOT NULL,
+  `forma_pagamento_id` bigint NOT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `data_vencimento` date DEFAULT NULL,
+  `situacao` char(1) DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `forma_pagamento_id` (`forma_pagamento_id`),
+  KEY `fk_parcela_condicao` (`condicao_pagamento_id`),
+  CONSTRAINT `fk_parcela_condicao` FOREIGN KEY (`condicao_pagamento_id`) REFERENCES `condicoes_pagamento` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `parcelas_condicao_pagamento_ibfk_2` FOREIGN KEY (`forma_pagamento_id`) REFERENCES `formas_pagamento` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `produtos` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `quantidade_estoque` int DEFAULT NULL,
+  `codigo` varchar(30) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `marca_id` bigint DEFAULT NULL,
+  `unidade_medida_id` bigint DEFAULT NULL,
+  `valor_compra` decimal(10,2) DEFAULT NULL,
+  `custo_produto` decimal(10,2) DEFAULT NULL,
+  `valor_venda` decimal(10,2) DEFAULT NULL,
+  `quantidade_minima` int DEFAULT '1',
+  `percentual_lucro` decimal(10,2) DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `referencia` varchar(255) DEFAULT NULL,
+  `categoria_id` int DEFAULT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_produto_marca` (`marca_id`),
+  KEY `fk_produto_unidade_medida` (`unidade_medida_id`),
+  KEY `fk_produto_categoria` (`categoria_id`),
+  CONSTRAINT `fk_produto_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categorias` (`Id`),
+  CONSTRAINT `fk_produto_marca` FOREIGN KEY (`marca_id`) REFERENCES `marcas` (`id`),
+  CONSTRAINT `fk_produto_unidade_medida` FOREIGN KEY (`unidade_medida_id`) REFERENCES `unidades_medida` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `produtos_nota` (
+  `nota_entrada_id` bigint NOT NULL,
+  `produto_id` bigint NOT NULL,
+  `sequencia` int NOT NULL DEFAULT '1',
+  `quantidade` decimal(15,4) NOT NULL,
+  `valor_unitario` decimal(15,4) NOT NULL,
+  `valor_desconto` decimal(15,4) DEFAULT '0.0000',
+  `percentual_desconto` decimal(5,2) DEFAULT '0.00',
+  `valor_total` decimal(15,4) NOT NULL,
+  `rateio_frete` decimal(15,4) DEFAULT '0.0000',
+  `rateio_seguro` decimal(15,4) DEFAULT '0.0000',
+  `rateio_outras` decimal(15,4) DEFAULT '0.0000',
+  `custo_preco_final` decimal(15,4) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`nota_entrada_id`,`produto_id`,`sequencia`),
+  KEY `idx_produtos_nota_produto` (`produto_id`),
+  KEY `idx_produtos_nota_nota` (`nota_entrada_id`),
+  CONSTRAINT `fk_produtos_nota_nota_entrada` FOREIGN KEY (`nota_entrada_id`) REFERENCES `notas_entrada` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_produtos_nota_produto` FOREIGN KEY (`produto_id`) REFERENCES `produtos` (`id`),
+  CONSTRAINT `chk_percentual_desconto_valido` CHECK (((`percentual_desconto` >= 0) and (`percentual_desconto` <= 100))),
+  CONSTRAINT `chk_quantidade_positiva` CHECK ((`quantidade` > 0)),
+  CONSTRAINT `chk_sequencia_positiva` CHECK ((`sequencia` > 0)),
+  CONSTRAINT `chk_valor_desconto_positivo` CHECK ((`valor_desconto` >= 0)),
+  CONSTRAINT `chk_valor_total_positivo` CHECK ((`valor_total` >= 0)),
+  CONSTRAINT `chk_valor_unitario_positivo` CHECK ((`valor_unitario` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `transportadoras` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `razao_social` varchar(150) NOT NULL,
+  `nome_fantasia` varchar(100) DEFAULT NULL,
+  `cpf_cnpj` varchar(18) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `endereco` varchar(200) DEFAULT NULL,
+  `numero` varchar(10) DEFAULT NULL,
+  `complemento` varchar(100) DEFAULT NULL,
+  `bairro` varchar(100) DEFAULT NULL,
+  `cidade_id` bigint DEFAULT NULL,
+  `cep` varchar(10) DEFAULT NULL,
+  `tipo` char(1) DEFAULT 'J' COMMENT 'F=Física, J=Jurídica',
+  `rg_inscricao_estadual` varchar(20) DEFAULT NULL COMMENT 'RG ou Inscrição Estadual',
+  `condicao_pagamento_id` bigint DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  `ativo` tinyint(1) DEFAULT '1',
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_cnpj` (`cpf_cnpj`),
+  KEY `idx_transportadora_cidade` (`cidade_id`),
+  KEY `idx_transportadora_condicao_pagamento` (`condicao_pagamento_id`),
+  KEY `idx_transportadora_tipo` (`tipo`),
+  KEY `idx_transportadora_ativo` (`ativo`),
+  KEY `idx_transportadora_razao_social` (`razao_social`),
+  CONSTRAINT `fk_transportadora_cidade` FOREIGN KEY (`cidade_id`) REFERENCES `cidades` (`id`),
+  CONSTRAINT `fk_transportadora_condicao_pagamento` FOREIGN KEY (`condicao_pagamento_id`) REFERENCES `condicoes_pagamento` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `unidades_medida` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(60) NOT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
+  `observacao` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_unidade_medida_nome` (`nome`),
+  KEY `idx_unidade_medida_situacao` (`status`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE DATABASE `cantina_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
